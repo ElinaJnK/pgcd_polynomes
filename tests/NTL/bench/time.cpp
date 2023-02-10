@@ -8,22 +8,54 @@
 
 #include "../include/time.h"
 
-int main(int argc, char **argv)
+/**
+ * Choose the operation you want to conduct.
+ */
+long	su_operation_time(int choice_op, zz_pX P, zz_pX G, int d)
 {
-    // faire fichier avec valeurs
-    // analyse de l'existant
-    long d, b, p;
-	int choice_p, choice_op;
-    if (argc > 1)
+	double thres = 0.5;
+    double t = 0.0, start = 0.0;
+	int iter = 0;
+	zz_pX g;
+	switch(choice_op)
+	{
+		case 0:
+			break;
+		case 1:
+			break;
+		case 2:
+			while (t < thres && iter < 100000)
+    		{
+        		random(P, d+1);
+        		random(G, d+1);
+        		start = GetWallTime();
+       			g = GCD(P,G);
+        		t += GetWallTime() - start;
+        		++iter;
+			}
+			break;
+		default:
+			return (0);
+	}
+	std::cout << "degree: "<< d << ", bench poly power NTL:" << (t / iter) << "s" << std::endl;
+	return (0.0);
+}
+
+/**
+ * Function to initialize parameters
+ */
+void	su_choice_params(long *d, long *b, long *p, int *choice_p, int *choice_op, int ac, char **av)
+{
+	if (ac > 1)
     {
-		if (argv[1])
-			choice_p = atoi(argv[1]);
-		if (argv[2])
-			choice_op = atoi(argv[2]);
-		if (argv[3])
-        	d = atoi(argv[3]);
-		if (argv[4])
-        	b = atoi(argv[4]);
+		if (av[1])
+			*choice_p = atoi(av[1]);
+		if (av[2])
+			*choice_op = atoi(av[2]);
+		if (av[3])
+        	*d = atoi(av[3]);
+		if (av[4])
+        	*b = atoi(av[4]);
     } else {
 		printf("By default, the polynome is generated with FFT, the operation is the GCD,\nthe degree of the polynomial is set to 1000,	\
 		\nand the number of bits is set to 60.\nIf you wish to change those values	\
@@ -35,15 +67,20 @@ int main(int argc, char **argv)
 		\n\t- 1 : multiplication	\
 		\n\t- 2 : GCD	\
 		\n\t- 3 : division	\n");
-        d = 1000;
-        b = 60;
-		choice_p = 0;
-		choice_op = 2;
+        *d = 1000;
+        *b = 60;
+		*choice_p = 0;
+		*choice_op = 2;
     }
-    using std::chrono::high_resolution_clock;
-    using std::chrono::duration_cast;
-    using std::chrono::duration;
-    using std::chrono::milliseconds;
+}
+
+int	main(int ac, char **av)
+{
+    // faire fichier avec valeurs
+    // analyse de l'existant
+    long d, b, p;
+	int choice_p, choice_op;
+	su_choice_params(&d, &b, &p, &choice_p, &choice_op, ac, av);
     zz_pX c;
 	switch (choice_p)
 	{
@@ -63,27 +100,12 @@ int main(int argc, char **argv)
 	}
 	zz_pX P;
 	zz_pX G;
-	zz_pX g;
+	su_operation_time(choice_op, P, G, d);
 	//random(P,d);
 	//random(G,d);
 	//auto start = std::chrono::system_clock::now();
 	//c = GCD(P,G);
 	//auto end = std::chrono::system_clock::now();
-    double thres = 0.5;
-    double t = 0.0, start = 0.0;
-	int iter = 0;
-    while (t < thres && iter < 100000)
-    {
-        random(P, d+1);
-        random(G, d+1);
-        start = GetWallTime();
-        g = GCD(P,G);
-        t += GetWallTime() - start;
-        ++iter;
-    }
-	std::cout << "degree: "<< d << " and p = "<< b << ", bench poly power NTL:" << (t / iter) << "s" << std::endl;
-	//std::chrono::duration<double> elapsed_seconds = end-start;    //}
-	//std::cout << "degre: "<< d << "  and p = "<< b << ",  elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
     return 0;
 }//complexity : O(dlog(d)) -> methodes a base de FFT
 //divRem et variables en zzpx refaire eea
