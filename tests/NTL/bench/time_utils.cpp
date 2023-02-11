@@ -6,12 +6,12 @@
  * do not forget to add 'sudo' before make.
  * ***/
 
-#include "../include/time.h"
+#include "../include/time_utils.h"
 
 /**
  * Choose the operation you want to conduct.
  */
-long	su_operation_time(int choice_op, zz_pX P, zz_pX G, int d)
+long su_operation_time(int choice_op, zz_pX P, zz_pX G, int d)
 {
 	double thres = 0.5;
     double t = 0.0, start = 0.0;

@@ -1,33 +1,24 @@
-CC			= g++
+CC=g++
+NAME=ntl.a
+CFLAGS= -g -O2 -std=c++11 -lntl -lgmp -lm -lpthread
+INCLUDE=include
+SRC_DIR=bench
+OBJ_DIR=obj
+SOURCES=time_utils.cpp
 
-NAME		= ntl.a
-
-CFLAGS		= -g -O2 -std=c++11 -pthread -lntl -lgmp -lm
-
-INCLUDE		= include
-
-SRC_DIR		= bench
-
-OBJ_DIR		= obj
-
-RM			= rm -f
-
-SOURCES =	time.cpp	\
-
-
-SRC	=	$(addprefix $(SRC_DIR)/,$(SOURCES))
+SRC=$(addprefix $(SRC_DIR)/,$(SOURCES))
 $(info $$SRC is [${SRC}])
 OBJS =	$(addprefix $(OBJ_DIR)/,$(SOURCES:.cpp=.o))
-$(info $$SRC is [${OBJS}])
+$(info $$OBJS is [${OBJS}])
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
 	ar rc $(NAME) $(OBJS)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INCLUDE)/time.h
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INCLUDE)/time_utils.h
 	mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) -I $(INCLUDE) -o $@ -c $<
+	$(CC)  -c $< -o $@ $(CFLAGS) -I $(INCLUDE)
 
 clean:
 	rm -rf $(OBJ_DIR)
