@@ -1,0 +1,7 @@
+set ylabel "Time"
+set xlabel "Degree of the polynome"
+set title "Graph of the time taken for different degrees of polynomes in NTL with a fixed size of bits = 60 and generated using InitFFT"
+plot "res.txt" using 1:2 title 'NTL' with lines
+set term postscript portrait
+set output "NTL.ps"
+set size 0.7, 0.7
