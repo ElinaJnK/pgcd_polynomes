@@ -15,7 +15,7 @@ void	su_write_in_file(int degree, double time)
 {
 	ofstream outdata;
 
-	outdata.open("res.txt", std::ios::app);
+	outdata.open("res_xgcd.txt", std::ios::app);
 	if (!outdata)
 	{
 		cerr << "Error, file could not be opened." << endl;
@@ -134,7 +134,10 @@ int	main(int ac, char **av)
 	}
 	zz_pX P;
 	zz_pX G;
-	su_operation_time(choice_op, P, G, d);
+	long k;
+	// generate graphs quicker
+	for (k = d; k <= 10000000; k += 1000)
+		su_operation_time(choice_op, P, G, k);
     return (0);
 }//complexity : O(dlog(d)) -> methodes a base de FFT
 //divRem et variables en zzpx refaire eea
