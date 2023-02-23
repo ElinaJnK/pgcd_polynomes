@@ -33,7 +33,7 @@ long su_operation_time(int choice_op, zz_pX P, zz_pX G, int d, int n=2)
 	double thres = 0.5;
     double t = 0.0, start = 0.0;
 	int iter = 0;
-	zz_pX g, u, v;
+	zz_pX g, u, v, reste;
 	while (t < thres && iter < 100000)
 	{
         random(P, d+1);
@@ -51,7 +51,7 @@ long su_operation_time(int choice_op, zz_pX P, zz_pX G, int d, int n=2)
 				g = GCD(P, G);
 				break;
 			case 3:
-				LeftShift(g, P, n);
+				DivRem(g, reste, P, G);
 				break;
 			case 4:
 				XGCD(g, u, v, P, G);
