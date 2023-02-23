@@ -121,7 +121,7 @@ int	main(int ac, char **av)
 		case 0:
 			zz_p::FFTInit(0); //nbres premiers FFT, premier de cette liste, 60 bits -> tandis que celui la est directement un nbre FFT
 			p = zz_p::modulus();
-			printf("Polynome generated with FFT\n");
+			printf("Polynome generated with FFT prime\n");
 			break;
 		case 1:
 			p = GenPrime_long(b); //nbre de bits -> se repose sur plusieurs nbre FFT //lim = 60 61 
