@@ -3,7 +3,7 @@
  * To compile, simply run make and then ./flint
  */
 #include "../include/time_utils.h"
-
+#include <flint/nmod_poly.h>
 /**
  * Function to generate random polynomials
  */
@@ -34,7 +34,6 @@ long su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, int
 	struct timeval start, end;
 	// the same results could be stored in sum and gcd, but i think it's clearer that way
 	nmod_poly_t sum, mul, gcd, divisor, quotient, remainder, g, s, t;
-	// store the result of the polynome
 	while (ts < thres && iter < 100000)
 	{
 		flint_randinit(state);
@@ -129,8 +128,8 @@ int main(int ac, char **av)
 	FILE *p_file;
 
 	su_choice_params_flint(&degree, &num_bits, &choice_op, ac, av);
-	nmod_poly_init(poly_A, degree);
-	nmod_poly_init(poly_B, degree);
+	nmod_poly_init(poly_A, n);
+	nmod_poly_init(poly_B, n);
 	//state = flint_rand_alloc();
 	// file to write results to (eventually include that in choice_params)
 	p_file = fopen("res.txt", "a");
