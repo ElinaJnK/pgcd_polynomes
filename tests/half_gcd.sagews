@@ -1,4 +1,3 @@
-︠44c44a37-5d76-49cb-a94c-a61f5e572eeb︠
 def fast_half_gcd(A, B, k):
     """
     Function to calculate the half-gcd as seen in
@@ -28,7 +27,6 @@ def fast_half_gcd(A, B, k):
     eta, q, R = fast_half_gcd(A.truncate(2 * d - 2), B.truncate(2 * d - 2 - (deg_a - deg_b)), d - 1)
     # STEP 4
     j = eta + 1
-    # I do not really understand what it means
     sigma = R.degree()
     res_r = R * matrix([A.truncate(2 * k), B.truncate(2 * k - (deg_a - deg_b))])
     r_j_1 = res_r[0]
@@ -56,13 +54,6 @@ A = x^2 + 3*x + 1;
 B = (x+1) * (x+2)
 fast_half_gcd(A, B, 1)
 gcd(A, B)
-︡9a423d86-68cb-404a-ac63-c8f5585158a7︡{"stdout":"(1, 1, [ 0  1]\n[ 1 -1])\n"}︡{"stdout":"1\n"}︡{"done":true}
-︠bedfd909-0a92-4dc3-8cb7-3027bba69a48sio︠
-
-︡5334915b-622d-47d5-a723-4f0e9f1123bc︡{"done":true}
-︠a3c8cca7-248e-4339-9b4e-149220b92626si︠
-
-︡36876671-9014-4bfd-9a30-5dd99c510dd9︡{"done":true}
 
 
 
