@@ -1,8 +1,9 @@
 # PGCD of polynomes by approximation/interpolation
 
 ## Files and implemented functions
-- time_utils.cpp : a first look into the time taken by the algorithms implemented by NTL
+- FLINT or NTL/bench/time_utils.cpp : a first look into the time taken by the algorithms implemented by NTL/FLINT
 - commandes.txt : a list of commands for gnuplot (see 'To run gnuplot')
+- .sagews : containing the new implemented algorithm for half-gcd in sage
 - *.h : header files
 
 ## Run the program
