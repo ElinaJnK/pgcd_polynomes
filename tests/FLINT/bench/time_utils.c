@@ -23,7 +23,7 @@ void nmod_poly_rand(nmod_poly_t pol, flint_rand_t state, slong len)
 /**
  * Choose the operation you want to conduct.
  */
-long su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, int d, int num_bits, FILE *p_file)
+long su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, int d, int num_bits)
 {
 	// might eventually show the polynome with nmod_poly_print(product);
 	double thres = 0.5;
@@ -83,8 +83,7 @@ long su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, int
 		flint_randclear(state);
     	++iter;
 	}
-	fprintf (p_file, "%d %f\n", d, (ts / iter));
-	return (0.0);
+	return (ts/iter);
 }
 
 /**
@@ -138,9 +137,17 @@ int main(int ac, char **av)
         printf ("File does not exist");
         return 0;
     }
-	//for (k = d; k <= 10000000; k += 1000)
-	su_operation_time(choice_op, poly_A, poly_B, degree, num_bits, p_file);
-
+	long k;
+	double ti_add, ti_mult, ti_div, ti_gcd, ti_xgcd;
+	for (k = degree; k <= 10000000; k += 1000)
+	{
+		ti_add = su_operation_time(0, poly_A, poly_B, k, num_bits);
+		ti_mult = su_operation_time(1, poly_A, poly_B, k, num_bits);
+		ti_gcd = su_operation_time(2, poly_A, poly_B, k, num_bits);
+		ti_div = su_operation_time(3, poly_A, poly_B, k, num_bits);
+		ti_xgcd = su_operation_time(4, poly_A, poly_B, k, num_bits);
+		fprintf (p_file, "%d %f\n", k, ti_add, ti_mult, ti_gcd, ti_div, ti_xgcd);
+	}
 	// free the polynome
 	nmod_poly_clear(poly_A);
 	nmod_poly_clear(poly_B);
