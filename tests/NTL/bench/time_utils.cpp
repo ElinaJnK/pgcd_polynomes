@@ -11,17 +11,17 @@
 /**
  * Write collected data in a file. The data will be written at the end of the file.
  */
-void	su_write_in_file(int degree, double time)
+void	su_write_in_file(int degree, double ti_add, double ti_mult, double ti_div, double ti_gcd, double ti_xgcd)
 {
 	ofstream outdata;
 
-	outdata.open("res_xgcd.txt", std::ios::app);
+	outdata.open("res_all.txt", std::ios::app);
 	if (!outdata)
 	{
 		cerr << "Error, file could not be opened." << endl;
 		exit(1);
 	}
-	outdata << degree << " " << time << endl;
+	outdata << degree << " " << ti_add << " " << ti_mult << " " << ti_div << " " << ti_gcd << " " << ti_xgcd << endl;
 	outdata.close();
 }
 
@@ -63,9 +63,9 @@ long su_operation_time(int choice_op, zz_pX P, zz_pX G, int d, int n=2)
 		t += GetWallTime() - start;
     	++iter;
 	}
-	su_write_in_file(d, (t/iter));
+	
 	std::cout << "degree: "<< d << ", bench poly power NTL:" << (t / iter) << "s" << std::endl;
-	return (0.0);
+	return (t/iter);
 }
 
 /**
@@ -135,9 +135,17 @@ int	main(int ac, char **av)
 	zz_pX P;
 	zz_pX G;
 	long k;
+	double ti_add, ti_mult, ti_div, ti_gcd, ti_xgcd;
 	// generate graphs quicker
 	for (k = d; k <= 10000000; k += 1000)
-		su_operation_time(choice_op, P, G, k);
+	{
+		ti_add = su_operation_time(0, P, G, k);
+		ti_mult = su_operation_time(1, P, G, k);
+		ti_gcd = su_operation_time(2, P, G, k);
+		ti_div = su_operation_time(3, P, G, k);
+		ti_xgcd = su_operation_time(4, P, G, k);
+		su_write_in_file(d, ti_add, ti_mult, ti_div, ti_gcd, ti_xgcd);
+	}
     return (0);
 }//complexity : O(dlog(d)) -> methodes a base de FFT
 //divRem et variables en zzpx refaire eea

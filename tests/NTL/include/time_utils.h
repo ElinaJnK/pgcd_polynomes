@@ -26,7 +26,7 @@ using std::ofstream;
 #include <cstdlib>
 
 long	su_operation_time(int choice_op, zz_pX P, zz_pX G, int d, int n);
-void	su_write_in_file(int degree, double time);
+void	su_write_in_file(int degree, double ti_add, double ti_mult, double ti_div, double ti_gcd, double ti_xgcd);
 void	su_choice_params(long *d, long *b, long *p, int *choice_p, int *choice_op, int ac, char **av);
 
 
