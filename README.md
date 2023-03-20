@@ -50,3 +50,10 @@ I will generate the graphs from these results.
 
 - Pour FLINT
 
+DOES NOT WORK YET
+```sh
+cd tests/FLINT
+make
+./flint
+```
+
