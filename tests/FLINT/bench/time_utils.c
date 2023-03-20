@@ -25,8 +25,6 @@ void nmod_poly_rand(nmod_poly_t pol, flint_rand_t state, slong len)
  */
 double su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, int d, int num_bits)
 {
-	flint_rand_t state;
-	flint_randinit(state);
 	// might eventually show the polynome with nmod_poly_print(product);
 	double thres = 0.5;
     double ts = 0.0;
@@ -38,8 +36,6 @@ double su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, i
 	nmod_poly_t sum, mul, gcd, divisor, quotient, remainder, g, s, t;
 	while (ts < thres && iter < 100000)
 	{
-        nmod_poly_rand(poly_A, state, num_bits);
-        nmod_poly_rand(poly_B, state, num_bits);
 		//start = flint_randint(state);
 		gettimeofday(&start, NULL);
 		//start = clock();
@@ -86,7 +82,6 @@ double su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, i
 		ts +=  (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1000000.0;
     	++iter;
 	}
-	flint_randclear(state);
 	return (ts/iter);
 }
 
@@ -125,37 +120,49 @@ int main(int ac, char **av)
 	// generate our polynome
 	nmod_poly_t poly_A;
 	nmod_poly_t poly_B;
-	mp_limb_t n = 97;
+	mp_limb_t n;
 	long num_bits, degree, d = 0, k;
 	double ti_add, ti_mult, ti_div, ti_gcd, ti_xgcd;
 	int choice_op;
-	FILE *p_file;
+	FILE *file_gcd_xgcd, *file_mult_div;
+	flint_rand_t state;
+	flint_randinit(state);
 
 	su_choice_params_flint(&degree, &num_bits, &choice_op, ac, av);
+	n = n_randprime(state, num_bits, 1);
+	printf("n: %lu\n", n);
 	nmod_poly_init(poly_A, n);
 	nmod_poly_init(poly_B, n);
 	//state = flint_rand_alloc();
 	// file to write results to (eventually include that in choice_params)
-	p_file = fopen("res.txt", "a");
-    if (p_file == NULL)
+	file_gcd_xgcd = fopen("results_gcd_xgcd_flint.txt", "a");
+	file_mult_div = fopen("results_mult_div_flint.txt", "a");
+    if (!file_gcd_xgcd | !file_mult_div)
     {
         printf ("File does not exist");
         return 0;
     }
-	for (k = degree; k <= 100000; k += 1000)
+	for (k = degree; k <= 10000000; k += 1000)
 	{
-		ti_add = su_operation_time(0, poly_A, poly_B, k, num_bits);
+		nmod_poly_rand(poly_A, state, n);
+        nmod_poly_rand(poly_B, state, n);
+		//nmod_poly_print(poly_A);
+		//nmod_poly_print(poly_B);
+		//ti_add = su_operation_time(0, poly_A, poly_B, k, num_bits);
 		ti_mult = su_operation_time(1, poly_A, poly_B, k, num_bits);
 		ti_gcd = su_operation_time(2, poly_A, poly_B, k, num_bits);
 		ti_div = su_operation_time(3, poly_A, poly_B, k, num_bits);
 		ti_xgcd = su_operation_time(4, poly_A, poly_B, k, num_bits);
 		printf("added : %ld %f %f %f %f %f\n", k, ti_add, ti_mult, ti_div, ti_gcd, ti_xgcd);
-		fprintf(p_file, "%ld %f %f %f %f %f\n", k, ti_add, ti_mult, ti_div, ti_gcd, ti_xgcd);
+		fprintf(file_gcd_xgcd, "%ld %f %f\n", k, ti_gcd, ti_xgcd);
+		fprintf(file_mult_div, "%ld %f %f\n", k, ti_mult, ti_div);
 	}
 	// free the polynome
 	nmod_poly_clear(poly_A);
 	nmod_poly_clear(poly_B);
 	//flint_rand_free(state);
-	fclose(p_file);
+	fclose(file_gcd_xgcd);
+	fclose(file_mult_div);
+	flint_randclear(state);
 	return (0);
 }

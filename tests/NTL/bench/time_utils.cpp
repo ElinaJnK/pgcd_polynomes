@@ -133,19 +133,31 @@ int	main(int ac, char **av)
 	zz_pX P;
 	zz_pX G;
 	long k;
-	double ti_add, ti_mult, ti_div, ti_gcd, ti_xgcd;
+	//double ti_add;
+	double ti_mult, ti_div, ti_gcd, ti_xgcd;
+	ofstream file_gcd_xgcd, file_mult_div;
+	file_gcd_xgcd.open("results_gcd_xgcd_ntl.txt", std::ios::app);
+	file_mult_div.open("results_mult_div_ntl.txt", std::ios::app);
+	if (!file_gcd_xgcd | !file_mult_div)
+	{
+		cerr << "Error, file could not be opened." << endl;
+		exit(1);
+	}
 	// generate graphs quicker -> for tests
 	for (k = d; k <= 10000000; k += 1000)
 	{
 		random(P, k+1);
         random(G, k+1);
-		ti_add = su_operation_time(0, P, G, k);
+		//ti_add = su_operation_time(0, P, G, k);
 		ti_mult = su_operation_time(1, P, G, k);
 		ti_gcd = su_operation_time(2, P, G, k);
 		ti_div = su_operation_time(3, P, G, k);
 		ti_xgcd = su_operation_time(4, P, G, k);
-		su_write_in_file(k, ti_add, ti_mult, ti_div, ti_gcd, ti_xgcd);
+		file_gcd_xgcd << k << " " << ti_gcd << " " << ti_xgcd << endl;
+		file_mult_div << k << " " << ti_mult << " " << ti_div << endl;
 	}
+	file_gcd_xgcd.close();
+	file_mult_div.close();
     return (0);
 }//complexity : O(dlog(d)) -> methodes a base de FFT
 //divRem et variables en zzpx refaire eea

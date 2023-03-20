@@ -34,4 +34,19 @@ brew install gnuplot
 gnuplot -p < commandes.txt
 ```
 
+## Comment faire les graphes ?
+
+- Pour NTL
+```sh
+cd tests/NTL
+make
+# faire les tests pour FFTInit (va generer automatiquement pour FFTInit)
+./ntl
+# faire les tests pour GenPrime_long
+./ntl 1 0 1000 60
+# devrait generer la phrase "Polynome generated with GenPrime\n" -> argv[1] indique que l'on utilise GenPrime_long
+```
+I will generate the graphs from these results.
+
+- Pour FLINT
 
