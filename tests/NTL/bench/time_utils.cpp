@@ -15,7 +15,7 @@ void	su_write_in_file(int degree, double ti_add, double ti_mult, double ti_div, 
 {
 	ofstream outdata;
 
-	outdata.open("res_all.txt", std::ios::app);
+	outdata.open("results_all_ntl.txt", std::ios::app);
 	if (!outdata)
 	{
 		cerr << "Error, file could not be opened." << endl;
@@ -28,7 +28,7 @@ void	su_write_in_file(int degree, double ti_add, double ti_mult, double ti_div, 
 /**
  * Choose the operation you want to conduct.
  */
-long su_operation_time(int choice_op, zz_pX P, zz_pX G, int d, int n=2)
+double su_operation_time(int choice_op, zz_pX P, zz_pX G, int d, int n=2)
 {
 	double thres = 0.5;
     double t = 0.0, start = 0.0;
@@ -36,8 +36,6 @@ long su_operation_time(int choice_op, zz_pX P, zz_pX G, int d, int n=2)
 	zz_pX g, u, v, reste;
 	while (t < thres && iter < 100000)
 	{
-        random(P, d+1);
-        random(G, d+1);
         start = GetWallTime();
 		switch(choice_op)
 		{
@@ -65,7 +63,7 @@ long su_operation_time(int choice_op, zz_pX P, zz_pX G, int d, int n=2)
 	}
 	
 	std::cout << "degree: "<< d << ", bench poly power NTL:" << (t / iter) << "s" << std::endl;
-	return (t/iter);
+	return ((t / iter));
 }
 
 /**
@@ -139,6 +137,8 @@ int	main(int ac, char **av)
 	// generate graphs quicker -> for tests
 	for (k = d; k <= 10000000; k += 1000)
 	{
+		random(P, k+1);
+        random(G, k+1);
 		ti_add = su_operation_time(0, P, G, k);
 		ti_mult = su_operation_time(1, P, G, k);
 		ti_gcd = su_operation_time(2, P, G, k);

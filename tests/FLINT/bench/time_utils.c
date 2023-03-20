@@ -23,7 +23,7 @@ void nmod_poly_rand(nmod_poly_t pol, flint_rand_t state, slong len)
 /**
  * Choose the operation you want to conduct.
  */
-long su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, int d, int num_bits)
+double su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, int d, int num_bits)
 {
 	// might eventually show the polynome with nmod_poly_print(product);
 	double thres = 0.5;
@@ -32,6 +32,7 @@ long su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, int
 	// for walltime
 	flint_rand_t state;
 	struct timeval start, end;
+	//clock_t start, end;
 	// the same results could be stored in sum and gcd, but i think it's clearer that way
 	nmod_poly_t sum, mul, gcd, divisor, quotient, remainder, g, s, t;
 	while (ts < thres && iter < 100000)
@@ -41,6 +42,7 @@ long su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, int
         nmod_poly_rand(poly_B, state, num_bits);
 		//start = flint_randint(state);
 		gettimeofday(&start, NULL);
+		//start = clock();
 		switch(choice_op)
 		{
 			case 0:
@@ -78,6 +80,8 @@ long su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, int
 				printf("There seems to be an error in the choice of operation.\n");
 				return (0);
 		}
+		//end = clock();
+		//ts += ((double) (end - start)) / CLOCKS_PER_SEC;
 		gettimeofday(&end, NULL);
 		ts +=  (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1000000.0;
 		flint_randclear(state);
@@ -123,6 +127,7 @@ int main(int ac, char **av)
 	nmod_poly_t poly_B;
 	mp_limb_t n = 97;
 	long num_bits, degree, d = 0, k;
+	double ti_add, ti_mult, ti_div, ti_gcd, ti_xgcd;
 	int choice_op;
 	FILE *p_file;
 
@@ -137,16 +142,15 @@ int main(int ac, char **av)
         printf ("File does not exist");
         return 0;
     }
-	long k;
-	double ti_add, ti_mult, ti_div, ti_gcd, ti_xgcd;
-	for (k = degree; k <= 10000000; k += 1000)
+	for (k = degree; k <= 100000; k += 1000)
 	{
 		ti_add = su_operation_time(0, poly_A, poly_B, k, num_bits);
 		ti_mult = su_operation_time(1, poly_A, poly_B, k, num_bits);
 		ti_gcd = su_operation_time(2, poly_A, poly_B, k, num_bits);
 		ti_div = su_operation_time(3, poly_A, poly_B, k, num_bits);
 		ti_xgcd = su_operation_time(4, poly_A, poly_B, k, num_bits);
-		fprintf (p_file, "%d %f\n", k, ti_add, ti_mult, ti_gcd, ti_div, ti_xgcd);
+		printf("added : %ld %f %f %f %f %f\n", k, ti_add, ti_mult, ti_div, ti_gcd, ti_xgcd);
+		fprintf(p_file, "%ld %f %f %f %f %f\n", k, ti_add, ti_mult, ti_div, ti_gcd, ti_xgcd);
 	}
 	// free the polynome
 	nmod_poly_clear(poly_A);
