@@ -25,19 +25,19 @@ void nmod_poly_rand(nmod_poly_t pol, flint_rand_t state, slong len)
  */
 double su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, int d, int num_bits)
 {
+	flint_rand_t state;
+	flint_randinit(state);
 	// might eventually show the polynome with nmod_poly_print(product);
 	double thres = 0.5;
     double ts = 0.0;
 	int iter = 0;
 	// for walltime
-	flint_rand_t state;
 	struct timeval start, end;
 	//clock_t start, end;
 	// the same results could be stored in sum and gcd, but i think it's clearer that way
 	nmod_poly_t sum, mul, gcd, divisor, quotient, remainder, g, s, t;
 	while (ts < thres && iter < 100000)
 	{
-		flint_randinit(state);
         nmod_poly_rand(poly_A, state, num_bits);
         nmod_poly_rand(poly_B, state, num_bits);
 		//start = flint_randint(state);
@@ -84,9 +84,9 @@ double su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, i
 		//ts += ((double) (end - start)) / CLOCKS_PER_SEC;
 		gettimeofday(&end, NULL);
 		ts +=  (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1000000.0;
-		flint_randclear(state);
     	++iter;
 	}
+	flint_randclear(state);
 	return (ts/iter);
 }
 
