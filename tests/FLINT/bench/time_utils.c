@@ -4,9 +4,20 @@
  */
 #include "../include/time_utils.h"
 #include <flint/nmod_poly.h>
+#include <flint/profiler.h>
+
 /**
  * Function to generate random polynomials
  */
+void _nmod_vec_rand(mp_ptr vec,
+            		flint_rand_t state,
+            		slong len,
+            		nmod_t mod)
+{
+    for (slong i = 0; i < len; i++)
+        vec[i] = n_randint(state, mod.n);
+}
+
 void nmod_poly_rand(nmod_poly_t pol, flint_rand_t state, slong len)
 {
     if (len <= 0)
@@ -14,7 +25,7 @@ void nmod_poly_rand(nmod_poly_t pol, flint_rand_t state, slong len)
     else
     {
         nmod_poly_fit_length(pol, len);
-        _nmod_vec_randtest(pol->coeffs, state, len, pol->mod);
+        _nmod_vec_rand(pol->coeffs, state, len, pol->mod);
         pol->length = len;
         _nmod_poly_normalise(pol);
     }
@@ -23,54 +34,48 @@ void nmod_poly_rand(nmod_poly_t pol, flint_rand_t state, slong len)
 /**
  * Choose the operation you want to conduct.
  */
-double su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, int d, int num_bits)
+double su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, int n)
 {
 	// might eventually show the polynome with nmod_poly_print(product);
-	double thres = 0.5;
-    double ts = 0.0;
-	int iter = 0;
+	long thres = 500; // threshold, millisecond
+	long ts = 0; // total time, millisecond
+	long iter = 0;
 	// for walltime
-	struct timeval start, end;
+	timeit_t tt;
 	//clock_t start, end;
 	// the same results could be stored in sum and gcd, but i think it's clearer that way
 	nmod_poly_t sum, mul, gcd, divisor, quotient, remainder, g, s, t;
+	nmod_poly_init(sum, n);
+	nmod_poly_init(mul, n);
+	nmod_poly_init(gcd, n);
+	nmod_poly_init(divisor, n);
+	nmod_poly_init(quotient, n);
+	nmod_poly_init(remainder, n);
+	nmod_poly_init(g, n);
+	nmod_poly_init(s, n);
+	nmod_poly_init(t, n);
+
 	while (ts < thres && iter < 100000)
 	{
 		//start = flint_randint(state);
-		gettimeofday(&start, NULL);
+		timeit_start(tt);
 		//start = clock();
 		switch(choice_op)
 		{
 			case 0:
-				nmod_poly_init(sum, d);
 				nmod_poly_add(sum, poly_A, poly_B);
-				nmod_poly_clear(sum);
 				break;
 			case 1:
-				nmod_poly_init(mul, 2*d);
 				nmod_poly_mul(mul, poly_A, poly_B);
-				nmod_poly_clear(mul);
 				break;
 			case 2:
-				nmod_poly_init(gcd, d);
 				nmod_poly_gcd(gcd, poly_A, poly_B);
-				nmod_poly_clear(gcd);
 				break;
 			case 3:
-    			nmod_poly_init(quotient, d-2);
-    			nmod_poly_init(remainder, d-1);
 				nmod_poly_divrem(quotient, remainder, poly_A, poly_B);
-				nmod_poly_clear(quotient);
-    			nmod_poly_clear(remainder);
 				break;
 			case 4:
-				nmod_poly_init(g, d);
-    			nmod_poly_init(s, d);
-				nmod_poly_init(t, d);
 				nmod_poly_xgcd(g, s, t, poly_A, poly_B);
-				nmod_poly_clear(g);
-				nmod_poly_clear(s);
-    			nmod_poly_clear(t);
 				break;
 			default:
 				printf("There seems to be an error in the choice of operation.\n");
@@ -78,11 +83,21 @@ double su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, i
 		}
 		//end = clock();
 		//ts += ((double) (end - start)) / CLOCKS_PER_SEC;
-		gettimeofday(&end, NULL);
-		ts +=  (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1000000.0;
-    	++iter;
+		timeit_stop(tt);
+		ts += tt->cpu;
+		++iter;
 	}
-	return (ts/iter);
+
+	nmod_poly_clear(sum);
+	nmod_poly_clear(mul);
+	nmod_poly_clear(gcd);
+	nmod_poly_clear(quotient);
+	nmod_poly_clear(remainder);
+	nmod_poly_clear(g);
+	nmod_poly_clear(s);
+	nmod_poly_clear(t);
+
+	return ((double)ts / (1000*iter));
 }
 
 /**
@@ -121,7 +136,7 @@ int main(int ac, char **av)
 	nmod_poly_t poly_A;
 	nmod_poly_t poly_B;
 	mp_limb_t n;
-	long num_bits, degree, d = 0, k;
+	long num_bits, degree, k;
 	double ti_add, ti_mult, ti_div, ti_gcd, ti_xgcd;
 	int choice_op;
 	FILE *file_gcd_xgcd, *file_mult_div;
@@ -144,18 +159,18 @@ int main(int ac, char **av)
     }
 	for (k = degree; k <= 10000000; k += 1000)
 	{
-		nmod_poly_rand(poly_A, state, n);
-        nmod_poly_rand(poly_B, state, n);
+		nmod_poly_rand(poly_A, state, k);
+		nmod_poly_rand(poly_B, state, k);
 		//nmod_poly_print(poly_A);
 		//nmod_poly_print(poly_B);
-		//ti_add = su_operation_time(0, poly_A, poly_B, k, num_bits);
-		ti_mult = su_operation_time(1, poly_A, poly_B, k, num_bits);
-		ti_gcd = su_operation_time(2, poly_A, poly_B, k, num_bits);
-		ti_div = su_operation_time(3, poly_A, poly_B, k, num_bits);
-		ti_xgcd = su_operation_time(4, poly_A, poly_B, k, num_bits);
-		printf("added : %ld %f %f %f %f %f\n", k, ti_add, ti_mult, ti_div, ti_gcd, ti_xgcd);
-		fprintf(file_gcd_xgcd, "%ld %f %f\n", k, ti_gcd, ti_xgcd);
-		fprintf(file_mult_div, "%ld %f %f\n", k, ti_mult, ti_div);
+		//ti_add = su_operation_time(0, poly_A, poly_B, n);
+		ti_mult = su_operation_time(1, poly_A, poly_B, n);
+		ti_gcd = su_operation_time(2, poly_A, poly_B, n);
+		ti_div = su_operation_time(3, poly_A, poly_B, n);
+		ti_xgcd = su_operation_time(4, poly_A, poly_B, n);
+		printf("added : %ld %.9f %.9f %.9f %.9f %.9f\n", k, ti_add, ti_mult, ti_div, ti_gcd, ti_xgcd);
+		fprintf(file_gcd_xgcd, "%ld %.9f %.9f\n", k, ti_gcd, ti_xgcd);
+		fprintf(file_mult_div, "%ld %.9f %.9f\n", k, ti_mult, ti_div);
 	}
 	// free the polynome
 	nmod_poly_clear(poly_A);
