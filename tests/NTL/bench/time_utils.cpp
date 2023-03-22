@@ -34,10 +34,10 @@ double su_operation_time(int choice_op, zz_pX P, zz_pX G, int d, int n=2)
     double t = 0.0, start = 0.0;
 	int iter = 0;
 	zz_pX g, u, v, reste;
+	random(P, d+1);
+	choice_op == 3 ? random(G, 2*(d+1)) : random(G, d+1);
 	while (t < thres && iter < 100000)
 	{
-		random(P, d+1);
-		choice_op == 3 ? random(G, 2*(d+1)) : random(G, d+1);
         start = GetWallTime();
 		switch(choice_op)
 		{
