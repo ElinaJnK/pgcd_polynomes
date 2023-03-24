@@ -60,8 +60,8 @@ double su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, i
 	while (ts < thres && iter < 100000)
 	{
 		//start = flint_randint(state);
-		nmod_poly_rand(poly_A, state, k);
-		choice_op == 3 ? nmod_poly_rand(poly_B, state, 2*k) : nmod_poly_rand(poly_B, state, k);
+		nmod_poly_rand(poly_B, state, k);
+		choice_op == 3 ? nmod_poly_rand(poly_A, state, 2*k) : nmod_poly_rand(poly_A, state, k);
 		timeit_start(tt);
 		//start = clock();
 		switch(choice_op)
