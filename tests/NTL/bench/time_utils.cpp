@@ -88,7 +88,7 @@ void	su_choice_params(long *d, long *b, long *p, int *choice_p, int *choice_op, 
         //	std::string charactersFilename(av[5]);
 
     } else {
-		printf("By default, the polynome is generated with FFT, the operation is the GCD,\nthe degree of the polynomial is set to 1000,	\
+		printf("By default, the polynome is generated with non-FFT prime, the operation is the GCD,\nthe degree of the polynomial is set to 1000,	\
 		\nand the number of bits is set to 60.\nIf you wish to change those values	\
 		\nplease execute the program with : \n\t./graph <choice of implementation> <choice of operation> <degree of polynomial> <number of bits> <file to save results (TODO)>	\
 		\n<choice of implementation> can either be\n\t- 0 : using a FFT generated polynomial	\
@@ -102,7 +102,7 @@ void	su_choice_params(long *d, long *b, long *p, int *choice_p, int *choice_op, 
 		\nFor example, you could try ./ntl 0 1 1000 60\n");
         *d = 1000;
         *b = 60;
-		*choice_p = 0;
+		*choice_p = 1;
 		*choice_op = 2;
     }
 }
@@ -146,7 +146,17 @@ int	main(int ac, char **av)
 		exit(1);
 	}
 	// generate graphs quicker -> for tests
-	for (k = d; k <= 10000000; k += 1000)
+	for (k = d; k <= 1000000; k += 1000)
+	{
+		//ti_add = su_operation_time(0, P, G, k);
+		ti_mult = su_operation_time(1, P, G, k);
+		ti_gcd = su_operation_time(2, P, G, k);
+		ti_div = su_operation_time(3, P, G, k);
+		ti_xgcd = su_operation_time(4, P, G, k);
+		file_gcd_xgcd << k << " " << ti_gcd << " " << ti_xgcd << endl;
+		file_mult_div << k << " " << ti_mult << " " << ti_div << endl;
+	}
+	for (k = 1010000; k <= 20000000; k += 10000)
 	{
 		//ti_add = su_operation_time(0, P, G, k);
 		ti_mult = su_operation_time(1, P, G, k);

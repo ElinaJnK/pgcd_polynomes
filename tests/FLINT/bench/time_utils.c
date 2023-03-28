@@ -162,7 +162,20 @@ int main(int ac, char **av)
         printf ("File does not exist");
         return 0;
     }
-	for (k = degree; k <= 100000000; k += 1000)
+	for (k = degree; k <= 1000000; k += 1000)
+	{
+		//ti_add = su_operation_time(0, poly_A, poly_B, n);
+		ti_mult = su_operation_time(1, poly_A, poly_B, n, k);
+		ti_gcd = su_operation_time(2, poly_A, poly_B, n, k);
+		ti_div = su_operation_time(3, poly_A, poly_B, n, k);
+		ti_xgcd = su_operation_time(4, poly_A, poly_B, n, k);
+		printf("added : %ld %.9f %.9f %.9f %.9f\n", k, ti_mult, ti_div, ti_gcd, ti_xgcd);
+		fprintf(file_gcd_xgcd, "%ld %.9f %.9f\n", k, ti_gcd, ti_xgcd);
+		fflush(file_gcd_xgcd);
+		fprintf(file_mult_div, "%ld %.9f %.9f\n", k, ti_mult, ti_div);
+		fflush(file_mult_div);
+	}
+	for (k = 1010000; k <= 20000000; k += 10000)
 	{
 		//ti_add = su_operation_time(0, poly_A, poly_B, n);
 		ti_mult = su_operation_time(1, poly_A, poly_B, n, k);
