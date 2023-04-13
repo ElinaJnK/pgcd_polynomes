@@ -1,0 +1,124 @@
+\newpage
+\section{Half-gcd Algorithm}
+\subsection{Definition }
+\newline - The half-gcd algorithm is an algorithm used to compute the greatest common divisor (GCD) of two polynomials over a field. The algorithm is based on repeated divisions and involves computing a sequence of remainders and quotients, and is known for its efficiency in certain cases. The basic idea is to divide the input polynomials into two parts of approximately equal degrees, and then compute the GCD of these two parts using recursive calls to the algorithm. Then, the algorithm combines the results of these recursive calls to compute the GCD of the input polynomials.
+\newline 
+So the idea here is to try to have the closest degree possible of the two polynomials.
+\newline
+\newline - This algorithm takes into the input 2 polynomials $r_0, r_1$ where $n = deg(r_0) \geq 0$ , $deg(r_1) = n-1$ if $ n > 0$ and $r_1 = 0$ if $n = 0$ and $k \in \mathbb{N}$ with $k \in [0;n]$.
+\newline
+\newline- To introduce us to this algorithm let us define :
+Let F be a field ,  $ r_0,r_1\in F[x]\ {0}$ with $deg(r_0) \geq deg(r_1) , s_0 = t_1 = 1 , s_1 = t_0 =0 $, and: 
+\newline
+\newline $r_2 = r_0 - q_1r_1$           $s_2 = s_0 - q_1s_1$           $t_2 = t_0 - q_1t_1$
+\newline          .                           .                           .
+\newline          .                           .                           .
+\newline          .                           .                           .                           
+\newline $ r_{i+1} = r_{i-1} - q_ir_i $ ,  $ s_{i+1} = s_{i-1} - q_is_i $ ,   $ t_{i+1} = t_{i-1} - q_it_i$
+\newline $ 0 = r_{l-1} - q_lr_l $ ,  $ s_{l+1} = s_{l-1} - q_ls_l $ ,   $ t_{l+1} = t_{l-1} - q_lt_l$ 
+\newline
+\newline Where $r_i$ are the reminders and $q_i$ are the quotients
+\newline
+\newline We will assume that $r_{l+1} = 0$ and $deg(r_{l+1}) = −\infty$
+\newline we also have
+\newline
+\newline
+\begin{pmatrix}
+r_i \\
+r_i+1
+\end{pmatrix}
+$=$
+\begin{pmatrix}
+0 & 1 \\
+1 & -q_i
+\end{pmatrix}
+\begin{pmatrix}
+r_{i-1} \\
+r_i
+\end{pmatrix}
+$= Q_i$
+\begin{pmatrix}
+r_{i-1} \\
+r_i
+\end{pmatrix}
+$= Q_i ... Q_1$
+\begin{pmatrix}
+r_0 \\
+r_1 \\
+\end{pmatrix}
+\newline
+\newline
+\newline where 
+\newline
+\newline
+$Q_i = $ 
+\begin{pmatrix}
+0 & 1 \\
+1 & -q_i
+\end{pmatrix} $\in {F[x]^{2*2}}$
+and $R_i = Q_i .... Q_1 = $
+\begin{pmatrix}
+s_i & t_i \\
+s_{i+1} & t_{i+1} 
+\end{pmatrix}
+\newline
+\newline
+\newline In other words, if we suppose that j is the degree of the $GCD(r_0, r_1)$ our matrix $R_j$ is the product from i= 1  till the degree of the GCD j, $R_j = \prod_{i = 1}^{ j } Q_i$ 
+\newline 
+\newline In this part we want to show that the matrix $R_j$ where j is the GCD degree gives us: 
+\newline (1) first row: polynomials u and v such that $r_0 s_j + r_1 t_j = GCD(r_0, r_1)$
+\newline (2) second row: polynomials u and v such that $r_0 s_{j+1} + r_1 t_{j+1} = 0$ 
+\newline 
+\newline For that we will use the  following lemma(3.8) :
+\newline For $0 \leq i \leq l$ , we have 
+\newline (i) $R_i$. 
+\begin{pmatrix} 
+r_0 \\
+r_1
+\end{pmatrix}
+$ = $
+\begin{pmatrix} 
+r_i \\
+r_{i+1}
+\end{pmatrix}
+\newline
+\newline (ii) $R_i = $ 
+\begin{pmatrix} 
+s_i & t_i \\
+s_{i+1} & t_{i+1}
+\end{pmatrix}
+\newline
+\newline
+\newline (iii) $gcd(r_0,r_1) \sim gcd(r_i, r_{i+1}) \sim r_l$
+\newline
+\newline (iv) $s_if + t_ig = r_i$ (this also holds for $i = l+1$)
+\newline
+\newline (v) $s_it_{i+1} -t_is_{i+1} = (-1)^i $
+\newline
+\newline (vi) $gcd(r_i, t_i) \sim gcd(r_0, t_i)$
+\newline
+\newline (vii) $f = (-1)^i(t_{i+1}r_i - t_ir_{i+1}), g = (-1)^{i+1}(s_{i+1}r_i - s_ir_{i+1})$
+\newline
+\newline with the convention $r_{l+1} = 0$
+\newline
+\newline 1- To show these 2 properties we need to show that the last nonzero remainder is the $GCD(r_0,r_1)$ which means $r_j$ where j is the degree of the GCD and also that the $r_{j+1} = 0$. 
+\newline
+\newline in the lemma we have the convention $r_{l+1} = 0$ and $deg(r_{l+1}) = −\infty $ which means that for $l = j$ we will have in the second line of the matrix :
+\newline
+\begin{pmatrix}
+    r_j \\
+    r_{j+1}
+\end{pmatrix}
+$ = R_j. $
+\begin{pmatrix}
+    r_0\\
+    r_1
+\end{pmatrix}
+$r_{j+1} = 0$ .
+\nelwine
+\newline 
+\newline If $r_{j+1}$ is not zero, then we can continue to divide $r_j$ by $r_{j+1}$ and obtain a new remainder $r_{j+2}$, and so on. This means that the GCD of a and b has not yet been found, as we still have a non-zero remainder. However, this cannot happen, because the degree of remainders decreases at each step and cannot be negative. Thus, the Euclidean algorithm must end with a zero remainder after a finite number of steps, which means that the GCD has been found and the degree of the GCD is equal to the number of steps required to obtain a zero remainder. And since in (iii) of the lemma (3.8) we can see that $gcd(r_0, r_1) \sim r_j$ we'll have two things:
+\newline 1- The GCD of $r_0$ and $r_1$ divides the last non-zero remainder obtained in the Euclidean algorithm which means $r_j$.
+\newline 2- Any common divisor of $r_0$ and $r_1$ that divides the last non-zero remainder ($r_j$) must also divide the GCD of $r_0$ and $r_1$. 
+\newline so we can say that the GCD($r_0$, $r_1$) is the last non-zero remainder after j steps which means $r_j$: GCD($r_0$, $r_1$) = $r_j$
+\newline Which proves the two properties (1), (2).
