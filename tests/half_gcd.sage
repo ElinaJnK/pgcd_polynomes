@@ -1,67 +1,82 @@
-def fast_half_gcd(A, B, k):
+def special_shift(f,k):
+    return f.shift(k-f.degree())
+
+def fast_half_gcd(r0, r1, k):
     """
     Function to calculate the half-gcd as seen in
     Gathen Gehrard - Modern Computer Algebra on page 321.
-    TODO: Change all truncate_polynomial to truncate() function
-    in sage (probably safer)
     """
-    # p, g polynomials
-    # check if deg B < deg A
-    deg_a = A.degree()
-    deg_b = B.degree()
-    if deg_b > deg_a:
-        raise Exception("The degree of B must be lower than the degree of A.\n Remeber, the call to the function is fast_half_gcd(A,B)")
-    if k > deg_a or k < 0:
-        raise Exception("Wrong value for k")
-    # STEP 1
-    if (deg_b == 0) or (k < deg_a - deg_b):
-        return 0, [], matrix.identity(A.parent(), 2)
-    elif (k == 0) or (deg_a - deg_b == 0):
-        lead_coeff = A.leading_coefficient() / B.leading_coefficient()
-        return 1, [lead_coeff], matrix(A.parent(), [[0,1],[1,-lead_coeff]])
-    # STEP 2
-    m = ceil(deg_a/2)
-    # STEP 3
-    """ This call returns eta(d - 1), q_1, ..., q_eta(d - 1) and R = Q_eta(d - 1) ... Q_1"""
-    d = ceil((deg_a + deg_b - k)/2)
-    eta, q, R = fast_half_gcd(A.truncate(2 * d - 2), B.truncate(2 * d - 2 - (deg_a - deg_b)), d - 1)
-    # STEP 4
+    # Check if deg r1 < deg r0
+    n0 = r0.degree()
+    n1 = r1.degree()
+    print("k:",k)
+    print("n0:",n0)
+    print("n1:",n1)
+    #if (n0 == -1):
+    #    n0 = 0
+    # Step 1
+    print("k:",k, "n0 - n1", n0 - n1)
+    if r1 == 0 or k < n0 - n1:
+        print("here 1")
+        return 0, [], matrix.identity(2)
+    elif k == 0 and n0 - n1 == 0:
+        print("here")
+        lead_coeff = r0.leading_coefficient() // r1.leading_coefficient()
+        return 1, [lead_coeff], matrix([[0, 1], [1, -lead_coeff]], ring=r0.parent())
+    if n1 > n0:
+        raise ValueError("The degree of r1 must be lower than the degree of r0.")
+    if k > n0 or k < 0:
+        raise ValueError("Wrong value for k")
+    # Step 2
+    d = ceil(k/2)
+    # Step 3
+    print("enter step 3")
+    eta, q, R = fast_half_gcd(special_shift(r0,2*d-2), special_shift(r1,2*d-2-(n0-n1)), d-1)
+    print("stuff",eta, q, R)
+    # Step 4
     j = eta + 1
-    sigma = R.degree()
-    res_r = R * matrix(A.parent(), [A.truncate(2 * k), B.truncate(2 * k - (deg_a - deg_b))])
-    r_j_1 = res_r[0]
-    r_j = res_r[1]
-    r = matrix(A.parent(), [r_j_1, r_j])
-    res_n = matrix(A.parent(), [r_j_1.degree(), r_j.degree()])
-    # STEP 5
-    if r_j == 0 or k < sigma + res_n[0] - res_n[1]:
+    print("R: ", R[1][1])
+    if (R[1][1] == 1):
+        sigma = 0
+    else:
+        print("ugh");
+        sigma = R[1][1].degree()
+    print(sigma)
+    res_r = R * matrix([[special_shift(r0,2*k)], [special_shift(r1,2*k-(n0-n1))]], ring=r0.parent())
+    r_j_1 = res_r[0][0]
+    print("r_j_1:", r_j_1)
+    r_j = res_r[1][0]
+    print("r_j:", r_j)
+    r = matrix([[r_j_1], [r_j]], ring=r0.parent())
+    res_n = matrix([[r_j_1.degree()], [r_j.degree()]])
+    # Step 5
+    if r_j == 0 or k < sigma + res_n[0][0] - res_n[1][0]:
         return j - 1, q[0:j-1], R
-    # STEP 6
-    q[j] = r_j_1 / r_j
-    Qj = matrix(A.parent(), [[0,1], [1, -q[j]]])
+    # Step 6
+    q.append(r_j_1 // r_j)
+    Qj = matrix([[0, 1], [1, -q[-1]]], ring=r0.parent())
     r_j_plus_one = r_j_1 % r_j
     n_j_plus_one = r_j_plus_one.degree()
-    # STEP 7
-    d_star = k - sigma - (res_n[0] - res_n[1])
-    # STEP 8
-    eta_2, q_2, S = fast_half_gcd(r_j.truncate(2 * d_star), r_j_plus_one.truncate(2 * d_star - (res_n[1] - n_j_plus_one)), d_star)
-    # STEP 9
+    # Step 7
+    d_star = k - sigma - (res_n[0][0] - res_n[1][0])
+    # Step 8
+    eta_2, q_2, S = fast_half_gcd(special_shift(r_j,2*d_star), special_shift(r_j_plus_one,2*d_star-(res_n[1][0]-n_j_plus_one)), d_star)
+    S = matrix(S, ring=r0.parent())
+    # Step 9
     h = eta_2 + j
-    return h, q[0:j] + q_2, S * Qj * R
+    return h, q[0:h] + q_2, S * Qj * R
 
+def fast_extended_euclidean_algorithm(f, g, k):
+    h, q, R = fast_half_gcd(f, g, k)
+    return q, R[:0, :0], R[:0, :1], R[0][0] * f + R[0][1] * g
+    
 pring.<x> = PolynomialRing(GF(997))
 #A = x^2 + 3*x + 1;
 #B = (x+1) * (x+2)
 A = pring.random_element(4)
-B = pring.random_element(3)
+A
+B = pring.random_element(4)
+B
 fast_half_gcd(A, B, 1)
+fast_extended_euclidean_algorithm(A, B, 1)
 gcd(A, B)
-
-
-
-
-
-
-
-
-
