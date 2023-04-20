@@ -35,9 +35,13 @@ gives us:
 \begin{lstlisting}[language=bash]
 Darwin elinas-macbook-air.home 21.6.0 Darwin Kernel Version 21.6.0: Sat Jun 18 17:05:47 PDT 2022; root:xnu-8020.140.41~1/RELEASE_ARM64_T8101 arm64
 \end{lstlisting}
-
-We get these results for polynomial multiplication and division:
-
+FLINT and NTL are two well-known libraries for performing arithmetic operations on integers and polynomials over finite fields. Both libraries provide efficient implementations of basic arithmetic operations such as addition, subtraction, multiplication, and division. In addition to these operations, both libraries also provide algorithms for computing the greatest common divisor (GCD) and extended GCD (XGCD) of two integers or polynomials.
+\newline 
+In this comparison, we will focus on the performance of FLINT and NTL for division, multiplication, GCD and XGCD operations. 
+\newline 
+We will first provide an overview of FLINT and NTL and their features. Then, we will discuss the algorithms used by both libraries, present our findings for division, multiplication GCD and XGCD, and compare their performance. 
+\newline
+\newline We get these results for polynomial multiplication and division:
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{figures/ntl_mult_div.png}
@@ -65,7 +69,8 @@ For the GCD and the XGCD we get the graphs :
 
 For polynomial GCD and XGCD computations, NTL uses the Euclidean algorithm. The complexity of this algorithm is:
 \begin{itemize}
-    \item Euclidean algorithm: $O(n^2)$, where $n$ is the degree of the input polynomials
+    \item algorithm NTL uses for computing the GCD of two integers is the binary GCD algorithm (also known as the Stein's algorithm). The binary GCD algorithm has a worst-case time complexity of O($log (n)^2$), where n is the maximum number of bits in the input integers.
+    \item For computing the XGCD of two integers, NTL uses the extended binary GCD algorithm, which is a variant of the binary GCD algorithm. The extended binary GCD algorithm has a worst-case time complexity of O($log (n)^2$), where n is the maximum number of bits in the input integers.
 \end{itemize}
 \subsubsection{FLINT}
 
@@ -105,3 +110,27 @@ For polynomial GCD and XGCD computations, FLINT uses various algorithms dependin
 \end{itemize}
 
 \qquad As such those are the results we want to approximate using our algorithm.
+\subsubsection{Comparaison between FLINT and NTL}
+\newline NTL (Number Theory Library) and FLINT (Fast Library for Number Theory) are two widely-used libraries for implementing efficient algorithms for number theory computations. Both libraries provide implementations of algorithms for basic number theory tasks such as prime generation, factoring, and computing greatest common divisors (GCDs) and extended GCDs. In this comparison, we will focus specifically on the performance of these libraries for computing multiplication, division GCDs and extended GCDs.
+\newline
+\newline In this comparison, we will focus on the performance of FLINT and NTL for division and multiplication operations. Division and multiplication are fundamental arithmetic operations and are used extensively in many computational tasks. Therefore, the performance of these operations is of great importance in many applications, especially in cryptography and coding theory.
+\newline
+\begin{itemize}
+\item Division and multiplication :
+\end{itemize}
+While comparing the two graphs of NTL and FLINT we can see that:
+\newline
+- For multiplication it's very efficient for both algorithm but we see that NTL is slightly faster than FLINT
+\newline
+- Concerning division NTL they're still efficient as algorithms but NTL is faster than FLINT for example to compute division of a polynomial of degree $6x10^6$ it only takes about $12s$ for NTL while is takes more than $30s$ for FLINT.
+\newline
+\begin{itemize}
+\item GCD and XGCD :
+\end{itemize}
+The GCD is a fundamental operation in number theory and has numerous applications in cryptography, coding theory, and other areas. The extended GCD is a more general algorithm that computes not only the GCD, but also the coefficients of a linear combination of the input numbers that equals their GCD. Therefore, the extended GCD is a powerful tool for solving Diophantine equations and other problems in number theory.
+\newline
+\newline Next, we will examine the performance of the GCD and extended GCD algorithms in NTL and FLINT, and compare their speed and efficiency.
+\newline When we see the two graphs of NTL and FLINT for computing The GCD and XGCD we can see that :
+\newline - For the GCD, NTL takes $130s$ for computing the GCD of a polynomial of degree $6x10^6$ while FLINT over $320s$ for a polynomial of the same degree, we can also see that the FLINT graph grows faster than NTL's.
+\newline - For the XGCD, NTL takes $150$ for computing the GCD of a polynomial of degree $6x10^6$ while FLINT over $500s$ for a polynomial of the same degree, we can also see that the FLINT graph grows faster than NTL's.
+\newline So we can say that NTL is faster than FLINT for computing GCD and XGCD for polynomials of high degrees
