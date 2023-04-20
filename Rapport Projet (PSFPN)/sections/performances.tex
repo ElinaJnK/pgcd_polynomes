@@ -1,16 +1,19 @@
 \newpage
 \section{Half-gcd Algorithm}
 \subsection{Definition }
-\newline - The half-gcd algorithm is an algorithm used to compute the greatest common divisor (GCD) of two polynomials over a field. The algorithm is based on repeated divisions and involves computing a sequence of remainders and quotients, and is known for its efficiency in certain cases. The basic idea is to divide the input polynomials into two parts of approximately equal degrees, and then compute the GCD of these two parts using recursive calls to the algorithm. Then, the algorithm combines the results of these recursive calls to compute the GCD of the input polynomials.
+\newline - The half-gcd algorithm is an algorithm used to compute the greatest common divisor (GCD) of two polynomials over a field. The algorithm is based on repeated divisions and involves computing a sequence of remainders and quotients, and is known for its efficiency in certain cases. The basic idea is to divide the input polynomials into two parts of approximately equal degrees, and then compute the GCD of these two parts using recursive calls to the algorithm. Then, the algorithm combines the results of these recursive calls to compute the GCD of the input polynomials to reduce the number of recursive calls required, which can significantly improve the performance of the algorithm.
+The half-gcd algorithm is particularly useful when the input polynomials have a large degree and are sparse, meaning that they have a small number of non-zero coefficients. In such cases, the half-gcd algorithm can be significantly faster than other GCD algorithms, such as the classical Euclidean algorithm or the extended Euclidean algorithm.
+One important aspect of the half-gcd algorithm is the choice of the base case, which determines when the recursion stops. Typically, the base case is chosen to be when the degree of the input polynomials is small enough to be computed using a faster algorithm, such as the Euclidean algorithm or the binary GCD algorithm.
+Overall, the half-gcd algorithm is a powerful tool in polynomial GCD computation and is widely used in computer algebra systems and applications, such as cryptography and coding theory.
 \newline 
-So the idea here is to try to have the closest degree possible of the two polynomials.
+So the idea of this algorithm is to try to have the closest degree possible of the two polynomials.
 \newline
-\newline - This algorithm takes into the input 2 polynomials $r_0, r_1$ where $n = deg(r_0) \geq 0$ , $deg(r_1) = n-1$ if $ n > 0$ and $r_1 = 0$ if $n = 0$ and $k \in \mathbb{N}$ with $k \in [0;n]$.
+\newline - The algorithm we have implemented takes into input 2 polynomials $r_0, r_1$ where $n = n_0 = deg(r_0) \geq deg(r_1) = n_1$ if $ n > 0$ and $r_1 = 0$ if $n = 0$ and $k \in \mathbb{N}$ with $k \in [0;n]$.
 \newline
 \newline- To introduce us to this algorithm let us define :
 Let F be a field ,  $ r_0,r_1\in F[x]\ {0}$ with $deg(r_0) \geq deg(r_1) , s_0 = t_1 = 1 , s_1 = t_0 =0 $, and: 
 \newline
-\newline $r_2 = r_0 - q_1r_1$           $s_2 = s_0 - q_1s_1$           $t_2 = t_0 - q_1t_1$
+\newline $r_2 = r_0 - q_1r_1$   ,      $s_2 = s_0 - q_1s_1$       ,    $t_2 = t_0 - q_1t_1$
 \newline          .                           .                           .
 \newline          .                           .                           .
 \newline          .                           .                           .                           
@@ -71,6 +74,7 @@ s_{i+1} & t_{i+1}
 \newline 
 \newline For that we will use the  following lemma(3.8) :
 \newline For $0 \leq i \leq l$ , we have 
+\newline
 \newline (i) $R_i$. 
 \begin{pmatrix} 
 r_0 \\
@@ -88,16 +92,15 @@ s_i & t_i \\
 s_{i+1} & t_{i+1}
 \end{pmatrix}
 \newline
-\newline
 \newline (iii) $gcd(r_0,r_1) \sim gcd(r_i, r_{i+1}) \sim r_l$
 \newline
-\newline (iv) $s_if + t_ig = r_i$ (this also holds for $i = l+1$)
+\newline (iv) $s_ir_0 + t_ir_1 = r_i$ (this also holds for $i = l+1$)
 \newline
 \newline (v) $s_it_{i+1} -t_is_{i+1} = (-1)^i $
 \newline
 \newline (vi) $gcd(r_i, t_i) \sim gcd(r_0, t_i)$
 \newline
-\newline (vii) $f = (-1)^i(t_{i+1}r_i - t_ir_{i+1}), g = (-1)^{i+1}(s_{i+1}r_i - s_ir_{i+1})$
+\newline (vii) $r_0 = (-1)^i(t_{i+1}r_i - t_ir_{i+1}), r_1 = (-1)^{i+1}(s_{i+1}r_i - s_ir_{i+1})$
 \newline
 \newline with the convention $r_{l+1} = 0$
 \newline
