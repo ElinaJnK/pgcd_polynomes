@@ -67,6 +67,32 @@ def ExtendedEuclidAlgorithm(a,b):
 
     return (r0, u0, v0)
 
+
+def random_matrix(i):
+    A = [[0, 0], [0, 0]]
+    B = [[0, 0], [0, 0]]
+    A00 = pring.random_element(i)
+    A01 = pring.random_element(i)
+    A10 = pring.random_element(i)
+    A11 = pring.random_element(i)
+
+    B00 = pring.random_element(i)
+    B01 = pring.random_element(i)
+    B10 = pring.random_element(i)
+    B11 = pring.random_element(i)
+
+    A[0][0] = A00
+    A[0][1] = A01
+    A[1][0] = A10
+    A[1][1] = A11
+
+    B[0][0] = B00
+    B[0][1] = B01
+    B[1][0] = B10
+    B[1][1] = B11
+    return matrix(A),matrix(B)
+
+
 # FAST HALF GCD
 
 def fast_half_gcd(r0, r1, k):
@@ -203,14 +229,15 @@ def fast_extended_euclidean_algorithm_strassen(f, g, k):
     h, q, R = fast_half_gcd_strassen(f, g, k)
     return q[0:h], R[0][0], R[0][1], R[0][0] * f + R[0][1] * g
 
+
 pring.<x> = PolynomialRing(GF(997))
 A = pring.random_element(4)
 B = pring.random_element(3)
 # print("A", A)
 # print("B", B)
-# print("real", xgcd(A,B))
-# print("fast_half_gcd (half): ", fast_half_gcd(A, B, 3))
-# print("fast_half_gcd : ", fast_extended_euclidean_algorithm(A, B, 3))
+print("real", xgcd(A,B))
+print("fast_half_gcd (half): ", fast_half_gcd(A, B, 3))
+print("fast_half_gcd : ", fast_extended_euclidean_algorithm(A, B, 3))
 # TESTS FOR STRASSEN MULTIPLICATION
 
 # Q = matrix([[0,1],[1,844*x + 916]])
@@ -223,20 +250,19 @@ B = pring.random_element(3)
 
 # TIME MEASURMENTS
 
-# GCD
 pring.<x> = PolynomialRing(GF(997))
 #field = GF(997)
 #pring.<x> = field[]
 x_values = []
 y_values_xgcd = []
-y_values_naive = []
-y_values_half_fast_gcd = []
 y_values_half_fast_gcd_strassen = []
+y_values_naive = []
 
-(gsage,usage,vsage) = xgcd(p,q)
-for i in range(1000, 100000, 10000):
+
+for i in range(10000, 300000, 10000):
     A = pring.random_element(i)
     B = pring.random_element(i-1)
+    print(i)
 
     # xgcd
     start_time = time.time()
@@ -244,23 +270,26 @@ for i in range(1000, 100000, 10000):
     end_time = time.time()
     y_values_xgcd.append(end_time - start_time)
 
+    # fast_half_gcd
+    start_time = time.time()
+    r = fast_extended_euclidean_algorithm_strassen(A, B, i)
+    end_time = time.time()
+    y_values_half_fast_gcd_strassen.append(end_time - start_time)
+
     # naive
     start_time = time.time()
     r = ExtendedEuclidAlgorithm(A, B)
     end_time = time.time()
     y_values_naive.append(end_time - start_time)
 
-    # fast_half_gcd
-    start_time = time.time()
-    r = fast_extended_euclidean_algorithm(A, B, i)
-    end_time = time.time()
-    y_values_half_fast_gcd.append(end_time - start_time)
-    
+    x_values.append(i)
+
     # fast_half_gcd_strassen
     start_time = time.time()
     r = fast_extended_euclidean_algorithm_strassen(A, B, i)
     end_time = time.time()
     y_values_half_fast_gcd_strassen.append(end_time - start_time)
+    
     x_values.append(i)
 
 plt.plot(x_values, y_values_xgcd, label='xgcd', marker='o')
@@ -274,57 +303,37 @@ plt.ylabel("Temps d'execution (secondes)")
 plt.legend()
 plt.show()
 
-# MULTIPLY
-def random_matrix(i):
-    A = [[0, 0], [0, 0]]
-    B = [[0, 0], [0, 0]]
-    A00 = pring.random_element(i)
-    A01 = pring.random_element(i)
-    A10 = pring.random_element(i)
-    A11 = pring.random_element(i)
-
-    B00 = pring.random_element(i)
-    B01 = pring.random_element(i)
-    B10 = pring.random_element(i)
-    B11 = pring.random_element(i)
-
-    A[0][0] = A00
-    A[0][1] = A01
-    A[1][0] = A10
-    A[1][1] = A11
-
-    B[0][0] = B00
-    B[0][1] = B01
-    B[1][0] = B10
-    B[1][1] = B11
-    return A,B
-
-pring = PolynomialRing(GF(997), 'x')
 x_values = []
 y_values_stras = []
 y_values_naive = []
 
-for i in range(10000, 1000000, 10000):
+for i in range(10000, 2000000, 10000):
+
     A , B = random_matrix(i)
-    
+    print(i)
     # strass
     start_time = time.time()
     r = strassen_multiply_2x2(A, B)
     end_time = time.time()
-    y_values_stras.append(end_time - start_time)
+    t = end_time - start_time
+    y_values_stras.append(t)
+    print(t)
 
     #naive
+
     start_time = time.time()
     r = matrix(A)*matrix(B)
     end_time = time.time()
-    y_values_naive.append(end_time - start_time)
+    t1 = end_time - start_time
+    y_values_naive.append(t1)
+    print(t1)
 
     x_values.append(i)
 plt.plot(x_values, y_values_stras, label='strassen', marker='o')
 plt.plot(x_values, y_values_naive, label='naive', marker='^')
 
-plt.title("Temps d'execution de la multiplication avec strassen et de la multiplication avec un algorithme naif en fonction du degré du polynome")
-plt.xlabel("Degré de A et B")
+plt.title("Temps d'execution de la multiplication avec strassen et l'algo naif en fonction du degré du polynome")
+plt.xlabel("degré de A et B")
 plt.ylabel("Temps d'execution (secondes)")
 plt.legend()
 plt.show()
