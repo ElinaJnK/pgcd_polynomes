@@ -103,13 +103,8 @@ def fast_half_gcd(r0, r1, k):
     # Check if deg r1 < deg r0
     n0 = r0.degree()
     n1 = r1.degree()
-    #print("k:",k)
-    #print("n0:",n0)
-    #print("n1:",n1)
-    #if (n0 == -1):
-    #    n0 = 0
+ 
     # Step 1
-    #print("k:",k, "n0 - n1", n0 - n1)
     if r1 == 0 or k < n0 - n1:
         return 0, [], matrix.identity(2)
     elif k == 0 and n0 - n1 == 0:
@@ -122,22 +117,16 @@ def fast_half_gcd(r0, r1, k):
     # Step 2
     d = ceil(k/2)
     # Step 3
-    #print("enter step 3")
     eta, q, R = fast_half_gcd(special_shift(r0,2*d-2), special_shift(r1,2*d-2-(n0-n1)), d-1)
-    #print(eta, q, R)
     # Step 4
     j = eta + 1
-    #print("R: ", R[1][1])
     if (R[1][1] == 1):
         sigma = 0
     else:
         sigma = R[1][1].degree()
-    #print(sigma)
     res_r = R * matrix([[special_shift(r0,2*k)], [special_shift(r1,2*k-(n0-n1))]], ring=r0.parent())
     r_j_1 = res_r[0][0]
-    #print("r_j_1:", r_j_1)
     r_j = res_r[1][0]
-    #print("r_j:", r_j)
     r = matrix([[r_j_1], [r_j]], ring=r0.parent())
     res_n = matrix([[r_j_1.degree()], [r_j.degree()]])
     # Step 5
@@ -171,13 +160,6 @@ def fast_half_gcd_strassen(r0, r1, k):
     # Check if deg r1 < deg r0
     n0 = r0.degree()
     n1 = r1.degree()
-    #print("k:",k)
-    #print("n0:",n0)
-    #print("n1:",n1)
-    #if (n0 == -1):
-    #    n0 = 0
-    # Step 1
-    #print("k:",k, "n0 - n1", n0 - n1)
     if r1 == 0 or k < n0 - n1:
         return 0, [], matrix.identity(2)
     elif k == 0 and n0 - n1 == 0:
@@ -190,22 +172,16 @@ def fast_half_gcd_strassen(r0, r1, k):
     # Step 2
     d = ceil(k/2)
     # Step 3
-    #print("enter step 3")
     eta, q, R = fast_half_gcd(special_shift(r0,2*d-2), special_shift(r1,2*d-2-(n0-n1)), d-1)
-    #print(eta, q, R)
     # Step 4
     j = eta + 1
-    #print("R: ", R[1][1])
     if (R[1][1] == 1):
         sigma = 0
     else:
         sigma = R[1][1].degree()
-    #print(sigma)
     res_r = R * matrix([[special_shift(r0,2*k)], [special_shift(r1,2*k-(n0-n1))]], ring=r0.parent())
     r_j_1 = res_r[0][0]
-    #print("r_j_1:", r_j_1)
     r_j = res_r[1][0]
-    #print("r_j:", r_j)
     r = matrix([[r_j_1], [r_j]], ring=r0.parent())
     res_n = matrix([[r_j_1.degree()], [r_j.degree()]])
     # Step 5
@@ -230,29 +206,10 @@ def fast_extended_euclidean_algorithm_strassen(f, g, k):
     return q[0:h], R[0][0], R[0][1], R[0][0] * f + R[0][1] * g
 
 
-pring.<x> = PolynomialRing(GF(997))
-A = pring.random_element(4)
-B = pring.random_element(3)
-# print("A", A)
-# print("B", B)
-print("real", xgcd(A,B))
-print("fast_half_gcd (half): ", fast_half_gcd(A, B, 3))
-print("fast_half_gcd : ", fast_extended_euclidean_algorithm(A, B, 3))
-# TESTS FOR STRASSEN MULTIPLICATION
-
-# Q = matrix([[0,1],[1,844*x + 916]])
-# R =  matrix([[0,1],[1, 605*x + 714]])
-# print("mult try : ", strassen_multiply_2x2(Q,R))
-# mult = Q*R
-# print("real mult of mat : ", mult)
-# print("strassen : ", fast_half_gcd_strassen(A, B, 3))
-#fast_extended_euclidean_algorithm(A, B, 1)
-
 # TIME MEASURMENTS
 
 pring.<x> = PolynomialRing(GF(997))
-#field = GF(997)
-#pring.<x> = field[]
+
 x_values = []
 y_values_xgcd = []
 y_values_half_fast_gcd_strassen = []
@@ -307,11 +264,14 @@ x_values = []
 y_values_stras = []
 y_values_naive = []
 
+# TIME MEASURMENTS FOR MULTIPLICATION
 for i in range(10000, 2000000, 10000):
 
+    # GENERATE TWO 2x2 RANDOM MATRICES A AND B
     A , B = random_matrix(i)
     print(i)
-    # strass
+
+    # STRASSEN
     start_time = time.time()
     r = strassen_multiply_2x2(A, B)
     end_time = time.time()
@@ -319,8 +279,7 @@ for i in range(10000, 2000000, 10000):
     y_values_stras.append(t)
     print(t)
 
-    #naive
-
+    # NAIVE
     start_time = time.time()
     r = matrix(A)*matrix(B)
     end_time = time.time()
