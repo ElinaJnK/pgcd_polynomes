@@ -10,20 +10,20 @@ def strassen_multiply_2x2(A, B):
     Multiplies two 2x2 matrices using the Strassen algorithm.
     """
     # Step 1: Create the seven products of the input matrices
-    p1 = A[0][0] * (B[0][1] - B[1][1])
-    p2 = (A[0][0] + A[0][1]) * B[1][1]
-    p3 = (A[1][0] + A[1][1]) * B[0][0]
-    p4 = A[1][1] * (B[1][0] - B[0][0])
-    p5 = (A[0][0] + A[1][1]) * (B[0][0] + B[1][1])
-    p6 = (A[0][1] - A[1][1]) * (B[1][0] + B[1][1])
-    p7 = (A[0][0] - A[1][0]) * (B[0][0] + B[0][1])
+    p1 = A[0,0] * (B[0,1] - B[1,1])
+    p2 = (A[0,0] + A[0,1]) * B[1,1]
+    p3 = (A[1,0] + A[1,1]) * B[0,0]
+    p4 = A[1,1] * (B[1,0] - B[0,0])
+    p5 = (A[0,0] + A[1,1]) * (B[0,0] + B[1,1])
+    p6 = (A[0,1] - A[1,1]) * (B[1,0] + B[1,1])
+    p7 = (A[0,0] - A[1,0]) * (B[0,0] + B[0,1])
 
     # Step 2: Compute the elements of the output matrix
-    C = [[0, 0], [0, 0]]
-    C[0][0] = p5 + p4 - p2 + p6
-    C[0][1] = p1 + p2
-    C[1][0] = p3 + p4
-    C[1][1] = p5 + p1 - p3 - p7
+    C = Matrix(A.base_ring(), 2, 2)
+    C[0,0] = p5 + p4 - p2 + p6
+    C[0,1] = p1 + p2
+    C[1,0] = p3 + p4
+    C[1,1] = p5 + p1 - p3 - p7
 
     return C
 
@@ -68,29 +68,10 @@ def ExtendedEuclidAlgorithm(a,b):
     return (r0, u0, v0)
 
 
-def random_matrix(i):
-    A = [[0, 0], [0, 0]]
-    B = [[0, 0], [0, 0]]
-    A00 = pring.random_element(i)
-    A01 = pring.random_element(i)
-    A10 = pring.random_element(i)
-    A11 = pring.random_element(i)
-
-    B00 = pring.random_element(i)
-    B01 = pring.random_element(i)
-    B10 = pring.random_element(i)
-    B11 = pring.random_element(i)
-
-    A[0][0] = A00
-    A[0][1] = A01
-    A[1][0] = A10
-    A[1][1] = A11
-
-    B[0][0] = B00
-    B[0][1] = B01
-    B[1][0] = B10
-    B[1][1] = B11
-    return matrix(A),matrix(B)
+def random_matrix(ring,i):
+    A = Matrix.random(ring, 2, 2, degree=i)
+    B = Matrix.random(ring, 2, 2, degree=i)
+    return A,B
 
 
 # FAST HALF GCD
@@ -100,16 +81,19 @@ def fast_half_gcd(r0, r1, k):
     Function to calculate the half-gcd as seen in
     Gathen Gehrard - Modern Computer Algebra on page 321.
     """
+    # polynomial ring
+    pring = r0.parent()
+
     # Check if deg r1 < deg r0
     n0 = r0.degree()
     n1 = r1.degree()
  
     # Step 1
     if r1 == 0 or k < n0 - n1:
-        return 0, [], matrix.identity(2)
+        return 0, [], matrix.identity(pring, 2)
     elif k == 0 and n0 - n1 == 0:
         lead_coeff = r0.leading_coefficient() // r1.leading_coefficient()
-        return 1, [lead_coeff], matrix([[0, 1], [1, -lead_coeff]], ring=r0.parent())
+        return 1, [lead_coeff], matrix(pring, 2, 2, [[0, 1], [1, -lead_coeff]])
     if n1 > n0:
         raise ValueError("The degree of r1 must be lower than the degree of r0.")
     if k > n0 or k < 0:
@@ -120,28 +104,27 @@ def fast_half_gcd(r0, r1, k):
     eta, q, R = fast_half_gcd(special_shift(r0,2*d-2), special_shift(r1,2*d-2-(n0-n1)), d-1)
     # Step 4
     j = eta + 1
-    if (R[1][1] == 1):
+    if (R[1,1] == 1):
         sigma = 0
     else:
-        sigma = R[1][1].degree()
-    res_r = R * matrix([[special_shift(r0,2*k)], [special_shift(r1,2*k-(n0-n1))]], ring=r0.parent())
-    r_j_1 = res_r[0][0]
-    r_j = res_r[1][0]
-    r = matrix([[r_j_1], [r_j]], ring=r0.parent())
+        sigma = R[1,1].degree()
+    res_r = R * matrix(pring, 2, 1, [[special_shift(r0,2*k)], [special_shift(r1,2*k-(n0-n1))]])
+    r_j_1 = res_r[0,0]
+    r_j = res_r[1,0]
+    r = matrix(pring, 2, 1, [[r_j_1], [r_j]])
     res_n = matrix([[r_j_1.degree()], [r_j.degree()]])
     # Step 5
-    if r_j == 0 or k < sigma + res_n[0][0] - res_n[1][0]:
+    if r_j == 0 or k < sigma + res_n[0,0] - res_n[1,0]:
         return j - 1, q[0:j-1], R
     # Step 6
     q.append(r_j_1 // r_j)
-    Qj = matrix([[0, 1], [1, -q[-1]]], ring=r0.parent())
+    Qj = matrix(pring, [[0, 1], [1, -q[-1]]])
     r_j_plus_one = r_j_1 % r_j
     n_j_plus_one = r_j_plus_one.degree()
     # Step 7
-    d_star = k - sigma - (res_n[0][0] - res_n[1][0])
+    d_star = k - sigma - (res_n[0,0] - res_n[1,0])
     # Step 8
-    eta_2, q_2, S = fast_half_gcd(special_shift(r_j,2*d_star), special_shift(r_j_plus_one,2*d_star-(res_n[1][0]-n_j_plus_one)), d_star)
-    S = matrix(S, ring=r0.parent())
+    eta_2, q_2, S = fast_half_gcd(special_shift(r_j,2*d_star), special_shift(r_j_plus_one,2*d_star-(res_n[1,0]-n_j_plus_one)), d_star)
     # Step 9
     h = eta_2 + j
     return h, q[0:h] + q_2, S * Qj * R
@@ -212,8 +195,9 @@ pring.<x> = PolynomialRing(GF(997))
 
 x_values = []
 y_values_xgcd = []
-y_values_half_fast_gcd_strassen = []
 y_values_naive = []
+y_values_half_fast_gcd = []
+y_values_half_fast_gcd_strassen = []
 
 
 for i in range(10000, 300000, 10000):
@@ -226,26 +210,28 @@ for i in range(10000, 300000, 10000):
     r = xgcd(A, B)
     end_time = time.time()
     y_values_xgcd.append(end_time - start_time)
-
-    # fast_half_gcd
-    start_time = time.time()
-    r = fast_extended_euclidean_algorithm_strassen(A, B, i)
-    end_time = time.time()
-    y_values_half_fast_gcd_strassen.append(end_time - start_time)
+    print(end_time - start_time)
 
     # naive
     start_time = time.time()
     r = ExtendedEuclidAlgorithm(A, B)
     end_time = time.time()
     y_values_naive.append(end_time - start_time)
+    print(end_time - start_time)
 
-    x_values.append(i)
+    # fast_half_gcd
+    start_time = time.time()
+    r = fast_extended_euclidean_algorithm(A, B, i)
+    end_time = time.time()
+    y_values_half_fast_gcd.append(end_time - start_time)
+    print(end_time - start_time)
 
     # fast_half_gcd_strassen
     start_time = time.time()
     r = fast_extended_euclidean_algorithm_strassen(A, B, i)
     end_time = time.time()
     y_values_half_fast_gcd_strassen.append(end_time - start_time)
+    print(end_time - start_time)
     
     x_values.append(i)
 
@@ -268,7 +254,7 @@ y_values_naive = []
 for i in range(10000, 2000000, 10000):
 
     # GENERATE TWO 2x2 RANDOM MATRICES A AND B
-    A , B = random_matrix(i)
+    A , B = random_matrix(pring,i)
     print(i)
 
     # STRASSEN
@@ -281,13 +267,14 @@ for i in range(10000, 2000000, 10000):
 
     # NAIVE
     start_time = time.time()
-    r = matrix(A)*matrix(B)
+    r2 = matrix(A)*matrix(B)
     end_time = time.time()
     t1 = end_time - start_time
     y_values_naive.append(t1)
     print(t1)
 
     x_values.append(i)
+
 plt.plot(x_values, y_values_stras, label='strassen', marker='o')
 plt.plot(x_values, y_values_naive, label='naive', marker='^')
 
