@@ -1,4 +1,3 @@
-︠6f1440b7-c6a0-4258-9295-cc3f1ac99a70︠
 import matplotlib.pyplot as plt
 import time
 from sage.all import *
