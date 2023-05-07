@@ -140,14 +140,19 @@ def fast_half_gcd_strassen(r0, r1, k):
     Function to calculate the half-gcd as seen in
     Gathen Gehrard - Modern Computer Algebra on page 321.
     """
+    # polynomial ring
+    pring = r0.parent()
+
     # Check if deg r1 < deg r0
     n0 = r0.degree()
     n1 = r1.degree()
+
+    # Step 1
     if r1 == 0 or k < n0 - n1:
-        return 0, [], matrix.identity(2)
+        return 0, [], matrix.identity(pring, 2)
     elif k == 0 and n0 - n1 == 0:
         lead_coeff = r0.leading_coefficient() // r1.leading_coefficient()
-        return 1, [lead_coeff], matrix([[0, 1], [1, -lead_coeff]], ring=r0.parent())
+        return 1, [lead_coeff], matrix(pring, 2, 2, [[0, 1], [1, -lead_coeff]])
     if n1 > n0:
         raise ValueError("The degree of r1 must be lower than the degree of r0.")
     if k > n0 or k < 0:
@@ -158,28 +163,27 @@ def fast_half_gcd_strassen(r0, r1, k):
     eta, q, R = fast_half_gcd_strassen(special_shift(r0,2*d-2), special_shift(r1,2*d-2-(n0-n1)), d-1)
     # Step 4
     j = eta + 1
-    if (R[1][1] == 1):
+    if (R[1,1] == 1):
         sigma = 0
     else:
-        sigma = R[1][1].degree()
-    res_r = R * matrix([[special_shift(r0,2*k)], [special_shift(r1,2*k-(n0-n1))]], ring=r0.parent())
-    r_j_1 = res_r[0][0]
-    r_j = res_r[1][0]
-    r = matrix([[r_j_1], [r_j]], ring=r0.parent())
+        sigma = R[1,1].degree()
+    res_r = R * matrix(pring, 2, 1, [[special_shift(r0,2*k)], [special_shift(r1,2*k-(n0-n1))]])
+    r_j_1 = res_r[0,0]
+    r_j = res_r[1,0]
+    r = matrix(pring, 2, 1, [[r_j_1], [r_j]])
     res_n = matrix([[r_j_1.degree()], [r_j.degree()]])
     # Step 5
-    if r_j == 0 or k < sigma + res_n[0][0] - res_n[1][0]:
+    if r_j == 0 or k < sigma + res_n[0,0] - res_n[1,0]:
         return j - 1, q[0:j-1], R
     # Step 6
     q.append(r_j_1 // r_j)
-    Qj = matrix([[0, 1], [1, -q[-1]]], ring=r0.parent())
+    Qj = matrix(pring, [[0, 1], [1, -q[-1]]])
     r_j_plus_one = r_j_1 % r_j
     n_j_plus_one = r_j_plus_one.degree()
     # Step 7
-    d_star = k - sigma - (res_n[0][0] - res_n[1][0])
+    d_star = k - sigma - (res_n[0,0] - res_n[1,0])
     # Step 8
-    eta_2, q_2, S = fast_half_gcd_strassen(special_shift(r_j,2*d_star), special_shift(r_j_plus_one,2*d_star-(res_n[1][0]-n_j_plus_one)), d_star)
-    S = matrix(S, ring=r0.parent())
+    eta_2, q_2, S = fast_half_gcd_strassen(special_shift(r_j,2*d_star), special_shift(r_j_plus_one,2*d_star-(res_n[1,0]-n_j_plus_one)), d_star)
     # Step 9
     h = eta_2 + j
     return h, q[0:h] + q_2, strassen_multiply_2x2(S, strassen_multiply_2x2(Qj, R))
@@ -200,7 +204,7 @@ y_values_half_fast_gcd = []
 y_values_half_fast_gcd_strassen = []
 
 
-for i in range(10000, 300000, 10000):
+for i in range(10000, 80000, 10000):
     A = pring.random_element(i)
     B = pring.random_element(i-1)
     print(i)
@@ -245,10 +249,6 @@ plt.xlabel("Degré de A et B")
 plt.ylabel("Temps d'execution (secondes)")
 plt.legend()
 plt.show()
-
-x_values = []
-y_values_stras = []
-y_values_naive = []
 
 # TIME MEASURMENTS FOR MULTIPLICATION
 for i in range(10000, 2000000, 10000):
