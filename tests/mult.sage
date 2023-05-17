@@ -1,4 +1,5 @@
 from half_gcd import strassen_multiply_2x2
+from half_gcd import random_matrix
 import time
 from sage.all import *
 # TIME MEASURMENTS
