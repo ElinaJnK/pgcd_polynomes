@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import time
 from sage.all import *
 
@@ -202,8 +201,11 @@ y_naive = 0
 y_half_fast_gcd = 0
 y_half_fast_gcd_strassen = 0
 
+list_degs = list(range(1000, 100000, 1000)) \
+        + list(range(100000, 1000000, 5000)) \
+        + list(range(1000000, 10000000, 25000))
 
-for i in range(1000, 2000000, 1000):
+for i in list_degs:
     A = pring.random_element(i)
     B = pring.random_element(i-1)
 
