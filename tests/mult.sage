@@ -1,10 +1,5 @@
 import time
 
-def random_matrix(ring,i):
-    A = Matrix.random(ring, 2, 2, degree=i)
-    B = Matrix.random(ring, 2, 2, degree=i)
-    return A,B
-
 def strassen_multiply_2x2(A, B):
     """
     Multiplies two 2x2 matrices using the Strassen algorithm.
@@ -31,11 +26,17 @@ pring.<x> = PolynomialRing(GF(997))
 
 y_strassen = 0
 y_mult = 0
+
+list_degs = list(range(1000, 100000, 1000)) \
+        + list(range(100000, 1000000, 5000)) \
+        + list(range(1000000, 10000000, 25000))
+
 # TIME MEASURMENTS FOR MULTIPLICATION
-for i in range(1000, 2000000, 1000):
+for i in list_degs:
 
     # GENERATE TWO 2x2 RANDOM MATRICES A AND B
-    A , B = random_matrix(pring,i)
+    A = Matrix.random(pring, 2, 2, degree=i)
+    B = Matrix.random(pring, 2, 2, degree=i)
 
     # NAIVE
     start_time = time.time()
