@@ -1,8 +1,31 @@
-from half_gcd import strassen_multiply_2x2
-from half_gcd import random_matrix
 import time
-from sage.all import *
-# TIME MEASURMENTS
+
+def random_matrix(ring,i):
+    A = Matrix.random(ring, 2, 2, degree=i)
+    B = Matrix.random(ring, 2, 2, degree=i)
+    return A,B
+
+def strassen_multiply_2x2(A, B):
+    """
+    Multiplies two 2x2 matrices using the Strassen algorithm.
+    """
+    # Step 1: Create the seven products of the input matrices
+    p1 = A[0,0] * (B[0,1] - B[1,1])
+    p2 = (A[0,0] + A[0,1]) * B[1,1]
+    p3 = (A[1,0] + A[1,1]) * B[0,0]
+    p4 = A[1,1] * (B[1,0] - B[0,0])
+    p5 = (A[0,0] + A[1,1]) * (B[0,0] + B[1,1])
+    p6 = (A[0,1] - A[1,1]) * (B[1,0] + B[1,1])
+    p7 = (A[0,0] - A[1,0]) * (B[0,0] + B[0,1])
+
+    # Step 2: Compute the elements of the output matrix
+    C = Matrix(A.base_ring(), 2, 2)
+    C[0,0] = p5 + p4 - p2 + p6
+    C[0,1] = p1 + p2
+    C[1,0] = p3 + p4
+    C[1,1] = p5 + p1 - p3 - p7
+
+    return C
 
 pring.<x> = PolynomialRing(GF(997))
 
