@@ -197,89 +197,61 @@ def fast_extended_euclidean_algorithm_strassen(f, g, k):
 
 pring.<x> = PolynomialRing(GF(997))
 
-x_values = []
-y_values_xgcd = []
-y_values_naive = []
-y_values_half_fast_gcd = []
-y_values_half_fast_gcd_strassen = []
+y_xgcd = 0
+y_naive = 0
+y_half_fast_gcd = 0
+y_half_fast_gcd_strassen = 0
 
 
-for i in range(10000, 80000, 10000):
+for i in range(1000, 2000000, 1000):
     A = pring.random_element(i)
     B = pring.random_element(i-1)
-    print(i)
 
-    # xgcd
+    # XGCD
     start_time = time.time()
     r = xgcd(A, B)
     end_time = time.time()
-    y_values_xgcd.append(end_time - start_time)
-    print(end_time - start_time)
+    y_xgcd = end_time - start_time
 
-    # naive
+    # NAIVE
     start_time = time.time()
     r = ExtendedEuclidAlgorithm(A, B)
     end_time = time.time()
-    y_values_naive.append(end_time - start_time)
-    print(end_time - start_time)
-
+    y_naive = end_time - start_time
+    
     # fast_half_gcd
     start_time = time.time()
     r = fast_extended_euclidean_algorithm(A, B, i)
     end_time = time.time()
-    y_values_half_fast_gcd.append(end_time - start_time)
-    print(end_time - start_time)
+    y_half_fast_gcd = end_time - start_time
 
     # fast_half_gcd_strassen
     start_time = time.time()
     r = fast_extended_euclidean_algorithm_strassen(A, B, i)
     end_time = time.time()
-    y_values_half_fast_gcd_strassen.append(end_time - start_time)
-    print(end_time - start_time)
+    y_half_fast_gcd_strassen = end_time - start_time
 
-    x_values.append(i)
+    print(i, " ", y_xgcd, " ", y_naive, " ", y_half_fast_gcd, " ", y_half_fast_gcd_strassen)
 
-plt.plot(x_values, y_values_xgcd, label='xgcd', marker='o')
-plt.plot(x_values, y_values_naive, label='naive', marker='^')
-plt.plot(x_values, y_values_half_fast_gcd, label='half_fast_gcd', marker='s')
-plt.plot(x_values, y_values_half_fast_gcd_strassen, label='half_fast_gcd_strassen', marker='d')
-
-plt.title("Temps d'execution des algorithmes en fonction du degré du polynome")
-plt.xlabel("Degré de A et B")
-plt.ylabel("Temps d'execution (secondes)")
-plt.legend()
-plt.show()
-
+y_strassen = 0
+y_mult = 0
 # TIME MEASURMENTS FOR MULTIPLICATION
-for i in range(10000, 2000000, 10000):
+for i in range(1000, 2000000, 1000):
 
     # GENERATE TWO 2x2 RANDOM MATRICES A AND B
     A , B = random_matrix(pring,i)
-    print(i)
-
-    # STRASSEN
-    start_time = time.time()
-    r = strassen_multiply_2x2(A, B)
-    end_time = time.time()
-    t = end_time - start_time
-    y_values_stras.append(t)
-    print(t)
 
     # NAIVE
     start_time = time.time()
     r2 = matrix(A)*matrix(B)
     end_time = time.time()
-    t1 = end_time - start_time
-    y_values_naive.append(t1)
-    print(t1)
+    y_mult = end_time - start_time
+    
+    # STRASSEN
+    start_time = time.time()
+    r = strassen_multiply_2x2(A, B)
+    end_time = time.time()
+    y_strassen = end_time - start_time
+    
+    print(i, " ", y_mult, " ", y_strassen)
 
-    x_values.append(i)
-
-plt.plot(x_values, y_values_stras, label='strassen', marker='o')
-plt.plot(x_values, y_values_naive, label='naive', marker='^')
-
-plt.title("Temps d'execution de la multiplication avec strassen et l'algo naif en fonction du degré du polynome")
-plt.xlabel("degré de A et B")
-plt.ylabel("Temps d'execution (secondes)")
-plt.legend()
-plt.show()
