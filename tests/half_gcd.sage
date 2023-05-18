@@ -197,7 +197,7 @@ def fast_extended_euclidean_algorithm_strassen(f, g, k):
 pring.<x> = PolynomialRing(GF(997))
 
 y_xgcd = 0
-y_naive = 0
+# y_naive = 0
 y_half_fast_gcd = 0
 y_half_fast_gcd_strassen = 0
 
@@ -215,10 +215,10 @@ for i in list_degs:
     y_xgcd = end_time - start_time
 
     # NAIVE
-    start_time = time.time()
-    r = ExtendedEuclidAlgorithm(A, B)
-    end_time = time.time()
-    y_naive = end_time - start_time
+    # start_time = time.time()
+    # r = ExtendedEuclidAlgorithm(A, B)
+    # end_time = time.time()
+    # y_naive = end_time - start_time
     
     # fast_half_gcd
     start_time = time.time()
@@ -232,4 +232,5 @@ for i in list_degs:
     end_time = time.time()
     y_half_fast_gcd_strassen = end_time - start_time
 
-    print(i, " ", y_xgcd, " ", y_naive, " ", y_half_fast_gcd, " ", y_half_fast_gcd_strassen)
+    # print(i, " ", y_xgcd, " ", y_naive, " ", y_half_fast_gcd, " ", y_half_fast_gcd_strassen)
+    print(i, " ", y_xgcd, " ", y_half_fast_gcd, " ", y_half_fast_gcd_strassen)
