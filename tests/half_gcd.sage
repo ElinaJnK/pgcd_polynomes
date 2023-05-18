@@ -201,8 +201,7 @@ y_naive = 0
 y_half_fast_gcd = 0
 y_half_fast_gcd_strassen = 0
 
-list_degs = list(range(1000, 100000, 1000)) \
-        + list(range(100000, 1000000, 5000)) \
+list_degs = list(range(100000, 1000000, 5000)) \
         + list(range(1000000, 10000000, 25000))
 
 for i in list_degs:
