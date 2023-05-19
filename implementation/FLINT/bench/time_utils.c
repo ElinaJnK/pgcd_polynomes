@@ -36,14 +36,11 @@ void nmod_poly_rand(nmod_poly_t pol, flint_rand_t state, slong len)
  */
 double su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, int n, long k)
 {
-	// might eventually show the polynome with nmod_poly_print(product);
 	long thres = 500; // threshold, millisecond
 	long ts = 0; // total time, millisecond
 	long iter = 0;
 	// for walltime
 	timeit_t tt;
-	//clock_t start, end;
-	// the same results could be stored in sum and gcd, but i think it's clearer that way
 	nmod_poly_t sum, mul, gcd, divisor, quotient, remainder, g, s, t;
 	flint_rand_t state;
 	flint_randinit(state);
@@ -59,11 +56,9 @@ double su_operation_time(int choice_op, nmod_poly_t poly_A,nmod_poly_t poly_B, i
 
 	while (ts < thres && iter < 100000)
 	{
-		//start = flint_randint(state);
 		nmod_poly_rand(poly_B, state, k);
 		choice_op == 3 ? nmod_poly_rand(poly_A, state, 2*k) : nmod_poly_rand(poly_A, state, k);
 		timeit_start(tt);
-		//start = clock();
 		switch(choice_op)
 		{
 			case 0:
@@ -136,7 +131,6 @@ void	su_choice_params_flint(long *d, long *b, int *choice_op, int ac, char **av)
 
 int main(int ac, char **av)
 {
-	// generate our polynome
 	nmod_poly_t poly_A;
 	nmod_poly_t poly_B;
 	mp_limb_t n;
@@ -149,12 +143,9 @@ int main(int ac, char **av)
 
 	su_choice_params_flint(&degree, &num_bits, &choice_op, ac, av);
 	n = n_randprime(state, num_bits, 1);
-	printf("n: %lu\n", n);
 	nmod_poly_init(poly_A, n);
 	nmod_poly_init(poly_B, n);
 
-	//state = flint_rand_alloc();
-	// file to write results to (eventually include that in choice_params)
 	file_gcd_xgcd = fopen("results_gcd_xgcd_flint.txt", "a");
 	file_mult_div = fopen("results_mult_div_flint.txt", "a");
     if (!file_gcd_xgcd || !file_mult_div)
@@ -164,7 +155,6 @@ int main(int ac, char **av)
     }
 	for (k = degree; k <= 1000000; k += 1000)
 	{
-		//ti_add = su_operation_time(0, poly_A, poly_B, n);
 		ti_mult = su_operation_time(1, poly_A, poly_B, n, k);
 		ti_gcd = su_operation_time(2, poly_A, poly_B, n, k);
 		ti_div = su_operation_time(3, poly_A, poly_B, n, k);
@@ -177,7 +167,6 @@ int main(int ac, char **av)
 	}
 	for (k = 1010000; k <= 20000000; k += 10000)
 	{
-		//ti_add = su_operation_time(0, poly_A, poly_B, n);
 		ti_mult = su_operation_time(1, poly_A, poly_B, n, k);
 		ti_gcd = su_operation_time(2, poly_A, poly_B, n, k);
 		ti_div = su_operation_time(3, poly_A, poly_B, n, k);
@@ -188,10 +177,8 @@ int main(int ac, char **av)
 		fprintf(file_mult_div, "%ld %.9f %.9f\n", k, ti_mult, ti_div);
 		fflush(file_mult_div);
 	}
-	// free the polynome
 	nmod_poly_clear(poly_A);
 	nmod_poly_clear(poly_B);
-	//flint_rand_free(state);
 	fclose(file_gcd_xgcd);
 	fclose(file_mult_div);
 	flint_randclear(state);
