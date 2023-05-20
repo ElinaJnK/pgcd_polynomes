@@ -72,7 +72,6 @@ double su_operation_time(int choice_op, zz_pX P, zz_pX G, int d, int n=2)
  * Function to initialize parameters
  */
 void	su_choice_params(long *d, long *b, long *p, int *choice_p, int *choice_op, int ac, char **av)
-//, char **file)
 {
 	if (ac > 1)
     {
@@ -84,8 +83,6 @@ void	su_choice_params(long *d, long *b, long *p, int *choice_p, int *choice_op, 
         	*d = atoi(av[3]);
 		if (av[4])
         	*b = atoi(av[4]);
-		//if (av[5])
-        //	std::string charactersFilename(av[5]);
 
     } else {
 		printf("By default, the polynome is generated with non-FFT prime, the operation is the GCD,\nthe degree of the polynomial is set to 1000,	\
@@ -109,22 +106,19 @@ void	su_choice_params(long *d, long *b, long *p, int *choice_p, int *choice_op, 
 
 int	main(int ac, char **av)
 {
-    // faire fichier avec valeurs
-    // analyse de l'existant
     long d, b, p;
 	int choice_p, choice_op;
 	su_choice_params(&d, &b, &p, &choice_p, &choice_op, ac, av);
-	//printf("file : %s\n", *file);
     zz_pX c;
 	switch (choice_p)
 	{
 		case 0:
-			zz_p::FFTInit(0); //nbres premiers FFT, premier de cette liste, 60 bits -> tandis que celui la est directement un nbre FFT
+			zz_p::FFTInit(0); // directly an FFT number
 			p = zz_p::modulus();
 			printf("Polynome generated with FFT prime\n");
 			break;
 		case 1:
-			p = GenPrime_long(b); //nbre de bits -> se repose sur plusieurs nbre FFT //lim = 60 61 
+			p = GenPrime_long(b); // looks at the number of bits -> multiple FFT numbers lim = 60 61 
 			zz_p::init(p);
 			printf("Polynome generated with GenPrime\n");
 			break;
@@ -145,10 +139,8 @@ int	main(int ac, char **av)
 		cerr << "Error, file could not be opened." << endl;
 		exit(1);
 	}
-	// generate graphs quicker -> for tests
 	for (k = d; k <= 1000000; k += 1000)
 	{
-		//ti_add = su_operation_time(0, P, G, k);
 		ti_mult = su_operation_time(1, P, G, k);
 		ti_gcd = su_operation_time(2, P, G, k);
 		ti_div = su_operation_time(3, P, G, k);
@@ -158,7 +150,6 @@ int	main(int ac, char **av)
 	}
 	for (k = 1010000; k <= 20000000; k += 10000)
 	{
-		//ti_add = su_operation_time(0, P, G, k);
 		ti_mult = su_operation_time(1, P, G, k);
 		ti_gcd = su_operation_time(2, P, G, k);
 		ti_div = su_operation_time(3, P, G, k);
@@ -169,6 +160,4 @@ int	main(int ac, char **av)
 	file_gcd_xgcd.close();
 	file_mult_div.close();
     return (0);
-}//complexity : O(dlog(d)) -> methodes a base de FFT
-//divRem et variables en zzpx refaire eea
-//mesurer efficacite
+}

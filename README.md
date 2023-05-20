@@ -5,12 +5,16 @@ The objective of this project is to develop and implement an efficient algorithm
 
 ## Files and implemented functions
 - FLINT or NTL/bench/time_utils.cpp : a first look into the time taken by the algorithms implemented by NTL/FLINT
-- commandes.txt : a list of commands for gnuplot (see 'To run gnuplot')
-- .sagews : containing the new implemented algorithm for half-gcd in sage
-- *.h : header files
+- FLINT or NTL/curves : representation of the curves using gnuplot
+- FLINT or NTL/results/commandes.txt : a list of commands for gnuplot (see 'To run gnuplot')
+- FLINT or NTL/*.h : header files
+- SAGE/half_gcd.sage : containing the new implemented algorithm for half-gcd in sage
+- SAGE/mult.sage : a comparison between multiplication with and without Strassen
+- */results : raw results from the computations 
 
 ## Run the program
 
+- NTL
 To run the program simply do:
 ```sh
 make
@@ -18,8 +22,22 @@ make
 ```
 Instructions will guide you towards what you wish to test.
 
-You can also run:
+- FLINT
+To run the program simply do:
+```sh
+make
+./flint
+```
+Instructions will guide you towards what you wish to test.
 
+- SAGE
+
+To run the program simply do:
+```sh
+sage half_gcd.sage
+```
+
+You can also run:
 ```sh
 make re # delete and make the project again
 make clean # delete all the compiled files
@@ -36,25 +54,3 @@ brew install gnuplot
 ```sh
 gnuplot -p < commandes.txt
 ```
-
-## Try to make graphs
-
-- For NTL
-```sh
-cd tests/NTL
-make
-# do tests for FFTInit
-./ntl
-# do tests for GenPrime_long
-./ntl 1 0 1000 60
-```
-I will generate the graphs from these results.
-
-- Pour FLINT
-
-```sh
-cd tests/FLINT
-make
-./flint
-```
-
