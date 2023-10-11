@@ -46,7 +46,7 @@ make fclean # delete everything
 
 ## To run gnuplot for algorithm analysis
 
-Install gnuplot;
+Install gnuplot
 
 ```sh
 brew install gnuplot
